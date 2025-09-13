@@ -53,6 +53,15 @@ services:
 
     restart: always
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_ARBITRARY: 1
+      # VIRTUAL_HOST: admin.gotasdecristal.com,admin.distribuidoraglavas.com
+      # LETSENCRYPT_HOST: admin.gotasdecristal.com,admin.distribuidoraglavas.com
+      # LETSENCRYPT_EMAIL: info@gotasdecristal.com
+    restart: always
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx_proxy

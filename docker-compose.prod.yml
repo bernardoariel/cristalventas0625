@@ -1,0 +1,11 @@
+services:
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOSTS: distribuidora_db,gotas_db
+      VIRTUAL_HOST: admin.gotasdecristal.com,admin.distribuidoraglavas.com
+      LETSENCRYPT_HOST: admin.gotasdecristal.com,admin.distribuidoraglavas.com
+      LETSENCRYPT_EMAIL: info@gotasdecristal.com

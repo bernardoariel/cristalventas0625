@@ -125,3 +125,20 @@ docker compose down
 3. `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
 4. Instalar TCPDF en cada web (Composer dentro del contenedor). 
 5. Subir el archivo factura para ver que este funcionando en la raiz de cada proyecto
+
+
+(--no-deps evita tocar las DB).
+
+✅ Reiniciar proxy/letsencrypt/phpmyadmin no afecta a MySQL.
+❌ NO uses docker compose down -v (el -v borra volúmenes = datos).
+❌ No renombres los servicios de DB ni los volúmenes en el compose.
+❌ Cambiar MYSQL_* no resetea una DB ya inicializada, pero tampoco cambia credenciales existentes; se usan solo en el primer arranque.
+
+```
+# Distribuidora
+docker exec distribuidora_db sh -c 'mysqldump -uroot -proot --databases distribuidora' > distribuidora_$(date +%F).sql
+
+# Gotas
+docker exec gotas_db sh -c 'mysqldump -uroot -proot --databases gotas' > gotas_$(date +%F).sql
+
+```

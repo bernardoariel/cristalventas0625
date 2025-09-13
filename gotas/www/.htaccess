@@ -1,0 +1,12 @@
+# Desactiva la lista de directorios
+Options -Indexes
+
+# Activa el motor de reescritura
+RewriteEngine On
+
+# Asegúrate de que el archivo o carpeta solicitado exista antes de redirigir
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirige todas las solicitudes dentro de marroquineria a index.php con un parámetro "ruta"
+RewriteRule ^(.*)$ index.php?ruta=$1 [L]

@@ -1,0 +1,95 @@
+services:
+
+  distribuidora_web:
+    build:
+      context: ./distribuidora
+    container_name: distribuidora_web
+    volumes:
+      - ./distribuidora/www:/var/www/html
+    restart: always
+    environment:
+      - VIRTUAL_HOST=distribuidoraglavas.com,www.distribuidoraglavas.com,distribuidora.local
+      - LETSENCRYPT_HOST=distribuidoraglavas.com,www.distribuidoraglavas.com
+      - LETSENCRYPT_EMAIL=info@distribuidoraglavas.com
+      - VIRTUAL_PORT=80
+
+  gotas_web:
+    build:
+      context: ./gotas
+    container_name: gotas_web
+    volumes:
+      - ./gotas/www:/var/www/html
+    restart: always
+    environment:
+      - VIRTUAL_HOST=gotasdecristal.com,www.gotasdecristal.com,gotas.local
+      - LETSENCRYPT_HOST=gotasdecristal.com,www.gotasdecristal.com
+      - LETSENCRYPT_EMAIL=info@gotasdecristal.com
+      - VIRTUAL_PORT=80
+
+  distribuidora_db:
+    image: mysql:5.7
+    container_name: distribuidora_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: distribuidora
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpass
+    volumes:
+      - distribuidora_db_data:/var/lib/mysql
+      - ./distribuidora/db/localhost.sql:/docker-entrypoint-initdb.d/localhost.sql
+    restart: always
+
+  gotas_db:
+    image: mysql:5.7
+    container_name: gotas_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gotas
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpass
+    volumes:
+      - gotas_db_data:/var/lib/mysql
+      - ./gotas/db/localhost.sql:/docker-entrypoint-initdb.d/localhost.sql
+
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_ARBITRARY: 1
+      # VIRTUAL_HOST: admin.gotasdecristal.com,admin.distribuidoraglavas.com
+      # LETSENCRYPT_HOST: admin.gotasdecristal.com,admin.distribuidoraglavas.com
+      # LETSENCRYPT_EMAIL: info@gotasdecristal.com
+    restart: always
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx_proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs:rw
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+      - ./nginx.tmpl:/app/nginx.tmpl
+      - confd:/etc/nginx/conf.d
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx_letsencrypt
+    environment:
+      NGINX_PROXY_CONTAINER: nginx_proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs:/etc/nginx/certs:rw
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+    depends_on:
+      - nginx-proxy
+volumes:
+  distribuidora_db_data:
+  gotas_db_data:
+  confd:

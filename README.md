@@ -5,7 +5,8 @@ Usuario: ```root```
 Contraseña: ```root```
 # 📌 Ejemplo para entrar a Gotas:
 
-Servidor: ```gotas_db```
+Servidor: 
+```gotas_db```
 Usuario: ```root```
 Contraseña: ```root```
 
@@ -33,3 +34,20 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 https://admin.gotasdecristal.com
 
 https://admin.distribuidoraglavas.com
+
+## Cambios en produccion
+1. subir docker-compose prod + dockercompse
+2. Subir los dockerfile en cada uno
+
+3) Instalar TCPDF
+
+```
+docker exec -it distribuidora_web bash
+```
+
+```
+composer --version   
+```
+```
+composer require tecnickcom/tcpdf
+```

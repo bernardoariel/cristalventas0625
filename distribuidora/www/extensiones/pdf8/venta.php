@@ -16,7 +16,7 @@ $codigo = isset($_GET['codigo']) ? trim($_GET['codigo']) : '0001-00000001';
 
 $venta = ControladorVentas::ctrMostrarVentas("codigo", $codigo);
 if (!$venta || !is_array($venta)) {
-  $t = new TicketTemplate($EMPRESA, ['width'=>80,'height'=>100]);
+  $t = new TicketTemplate($EMPRESA, ['width'=>55,'height'=>100]);
   $t->renderAuto(function(TicketTemplate $t) use($codigo) {
     $t->header('Ticket de Venta', "N° $codigo");
     $t->info(['Estado' => 'Venta no encontrada']);
@@ -72,7 +72,7 @@ if (!empty($venta['metodo_pago'])) {
 }
 
 
-$t = new TicketTemplate($EMPRESA, ['width'=>80,'height'=>240]);
+$t = new TicketTemplate($EMPRESA, ['width'=>55,'height'=>240]);
 $t->renderAuto(function(TicketTemplate $t) use($codigo,$clienteDatos,$items,$pagosRows,$venta){
   $sub = "N° $codigo  -  ".date('d/m/Y H:i');
 
@@ -85,7 +85,7 @@ $suma = $t->itemsTable($items, [
   'fs' => 8,
   'lh' => 4.0,
   'desc_max_lines' => 2,
-  'w' => ['cant'=>12, 'desc'=>42, 'imp'=>18],
+  'w' => ['cant'=>8, 'desc'=>30, 'imp'=>12],
 ]);
 $totalPagado = array_sum(array_map(fn($p)=> (float)$p['importe'], $pagosRows));
 $t->totals($totalPagado, null);

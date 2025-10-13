@@ -7,6 +7,15 @@ class TicketTemplate {
     private array $paper;
     private bool $measuring = false;
 
+    // Formatear números: si es entero, sin decimales; si tiene decimales, con decimales
+    private function formatNumber(float $number): string {
+        if (floor($number) == $number) {
+            return number_format($number, 0);
+        } else {
+            return number_format($number, 2);
+        }
+    }
+
     public function __construct(array $empresa, array $paper=['width'=>80,'height'=>240]){
         $this->empresa = $empresa;
         $this->paper   = $paper;
@@ -42,18 +51,18 @@ class TicketTemplate {
 
         foreach ($items as $it) {
             $cant = (float)($it['cant'] ?? 1);
-            $desc = mb_strimwidth((string)$it['desc'], 0, 26, '', 'UTF-8'); // acorta nombre
+            $desc = mb_strimwidth((string)$it['desc'], 0, 20, '', 'UTF-8'); // descripción más corta
             $imp  = isset($it['total'])
                 ? (float)$it['total']
                 : $cant * (float)($it['pu'] ?? 0);
 
             $total += $imp;
 
-            // Ej: " 1.00 - AGUA 10L                 1.234,50"
-            $line = sprintf("%5.2f - %-26s %9s",
-                $cant,
+            // Ej: " 1 - AGUA 10L           1234.50"
+            $line = sprintf("%-4s - %-20s %s",
+                $this->formatNumber($cant),
                 $desc,
-                number_format($imp, 2)
+                $this->formatNumber($imp)
             );
             $p->MultiCell(0, 4, $line, 0, 'L'); // línea más baja (4mm)
         }
@@ -78,9 +87,9 @@ public function itemsTable(array $items, array $opt = []): float {
 
     // Header
     $p->SetFont($family,'B',$fs);
-    $p->MultiCell($wCant, $lh, 'cant.',   0, 'C', false, 0);
-    $p->MultiCell($wDesc, $lh, 'Detalle', 0, 'C', false, 0); // ← centrado
-    $p->MultiCell($wImp,  $lh, 'Importe', 0, 'R', false, 1);
+    $p->MultiCell($wCant +2, $lh, 'Cant.',   0, 'L', false, 0);
+    $p->MultiCell($wDesc - 3, $lh, 'Detalle', 0, 'C', false, 0); // ← centrado, más estrecho
+    $p->MultiCell($wImp + 3,  $lh, 'Importe', 0, 'L', false, 1);
     $p->Ln(0.5);
 
     $total = 0.0;
@@ -101,15 +110,15 @@ public function itemsTable(array $items, array $opt = []): float {
 
         // cant. (centrado)
         $p->SetXY($curX, $curY);
-        $p->MultiCell($wCant, $rowH, number_format($cant, 2), 0, 'C', false, 0, '', '', true, 0, false, true, $rowH, 'M');
+        $p->MultiCell($wCant, $rowH, $this->formatNumber($cant), 0, 'C', false, 0, '', '', true, 0, false, true, $rowH, 'M');
 
         // Detalle (centrado, wrap)
         $p->SetXY($curX + $wCant, $curY);
-        $p->MultiCell($wDesc, $rowH, $desc, 0, 'C', false, 0, '', '', true, 0, false, true, $rowH, 'M');
+        $p->MultiCell($wDesc - 3, $rowH, $desc, 0, 'C', false, 0, '', '', true, 0, false, true, $rowH, 'M');
 
-        // Importe (derecha)
-        $p->SetXY($curX + $wCant + $wDesc, $curY);
-        $p->MultiCell($wImp, $rowH, number_format($imp, 2), 0, 'R', false, 1, '', '', true, 0, false, true, $rowH, 'M');
+        // Importe (centrado)
+        $p->SetXY($curX + $wCant + ($wDesc - 3), $curY);
+        $p->MultiCell($wImp + 3, $rowH, $this->formatNumber($imp), 0, 'C', false, 1, '', '', true, 0, false, true, $rowH, 'M');
 
         $p->Ln(0.5);
     }
@@ -164,10 +173,10 @@ public function itemsTwoLine(array $items): float {
         // 1) Línea de números
         $p->SetFont('courier','',8);
         $p->MultiCell(0,4, sprintf(
-            "%5.2f × %9s = %9s",
-            $cant,
-            number_format($pu, 2),
-            number_format($imp, 2)
+            "%s × %s = %s",
+            $this->formatNumber($cant),
+            $this->formatNumber($pu),
+            $this->formatNumber($imp)
         ), 0, 'R');
 
         // 2) Descripción (máx 2 líneas)
@@ -193,7 +202,7 @@ public function itemsTwoLine(array $items): float {
         foreach ($rows as $r) {
             $label = strtoupper((string)($r['tipo'] ?? $r['label'] ?? 'PAGO'));
             $monto = (float)($r['importe'] ?? $r['monto'] ?? 0);
-            $p->Cell(0, 5, sprintf("%-14s $ %s", $label, number_format($monto, 2)), 0, 1, 'R');
+            $p->Cell(0, 5, sprintf("%-14s $ %s", $label, $this->formatNumber($monto)), 0, 1, 'R');
         }
     }
 
@@ -219,7 +228,7 @@ public function itemsTwoLine(array $items): float {
         foreach ($items as $it) {
             $c=(float)($it['cant']??1); $pu=(float)($it['pu']??0); $imp=$c*$pu; $total+=$imp;
             $desc = mb_strimwidth((string)$it['desc'],0,20,'','UTF-8');
-            $p->MultiCell(0,5,sprintf("%-20s %4.2f x %7.2f = %7.2f",$desc,$c,$pu,$imp),0,'L');
+            $p->MultiCell(0,5,sprintf("%-20s %s x %s = %s",$desc,$this->formatNumber($c),$this->formatNumber($pu),$this->formatNumber($imp)),0,'L');
         }
         $p->Ln(1);
         return $total;
@@ -229,11 +238,11 @@ public function itemsTwoLine(array $items): float {
         $p=$this->pdf;
         $p->Ln(1.2);                        // ← NUEVO: margen superior del bloque
         $p->SetFont('helvetica','B',11);
-        $p->Cell(0,7,'TOTAL $ '.number_format($total,2),0,1,'R');
+        $p->Cell(0,7,'TOTAL $ '.$this->formatNumber($total),0,1,'R');
         if ($pagos) {
             $p->SetFont('helvetica','',9);
             foreach ($pagos as $k=>$v) {
-                $p->Cell(0,5,sprintf("%-14s $ %0.2f",ucfirst($k),(float)$v),0,1,'R');
+                $p->Cell(0,5,sprintf("%-14s $ %s",ucfirst($k),$this->formatNumber((float)$v)),0,1,'R');
             }
         }
         $p->Ln(0.5);

@@ -79,6 +79,8 @@ HACER FOCO EN NOMBRE DE PRODUCTOS CUANDO AGREGO
 $('#modalAgregarProducto').on('shown.bs.modal', function () {
     
     $('#nuevaCategoria').focus();
+    // Asegurar que el botón esté deshabilitado al inicio
+    $('#btnGuardarCrearProducto').prop('disabled', true);
   
 })
 
@@ -324,7 +326,7 @@ $('#nuevoCodigo').on('change', function(e){
 })
 //creo variables para dejar acentado si el valor es aceptado
 let valorNombreCrear = false
-let valorCodigoCrear = true
+let valorCodigoCrear = false
 
 $('#nuevoNombre').on('change', function(e){
   console.log($('#nuevoNombre').val())
@@ -349,7 +351,7 @@ $('#nuevoNombre').on('change', function(e){
         $(this).select()
         $(this).focus()
         
-        valorNombreCrear = true
+        valorNombreCrear = false
 
       }else{
 
@@ -395,7 +397,7 @@ $('#nuevoCodigo').on('change', function(e){
         $(this).select()
         $(this).focus()
         
-        valorCodigoCrear =true
+        valorCodigoCrear = false
       }else{
 
         $('#errCodigoCrear').html('')
@@ -448,7 +450,7 @@ $('#editarNombre').on('change', function(e){
         $(this).select()
         $(this).focus()
         
-        valorNombreEditar = true
+        valorNombreEditar = false
       }else{
 
         $('#errNombreEditar').html('')
@@ -495,7 +497,7 @@ $('#editarCodigo').on('change', function(e){
         $(this).select()
         $(this).focus()
         
-        valorCodigoEditar =true
+        valorCodigoEditar = false
       }else{
 
         $('#errCodigoEditar').html('')

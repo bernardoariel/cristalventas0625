@@ -6,10 +6,7 @@ $valor = null;
 $empresa = ControladorEmpresa::ctrMostrarEmpresa($item, $valor);
 
 ?>
-<div id="back">
-  
- 
-</div>
+<div id="back"></div>
 
 <div class="login-box">
   
@@ -18,10 +15,10 @@ $empresa = ControladorEmpresa::ctrMostrarEmpresa($item, $valor);
     <br>
 
 
-    <!-- <img src="<?php echo $empresa[0]['logoblancobloque'];?>" class="img-responsive" style="padding:30px 100px 0px 100px"> -->
-
+  
 
     <img src="<?php echo $empresa[0]['logoblancobloque'];?>" class="img-responsive" style="padding:30px 100px 0px 100px">
+
   </div>
 
   <div class="login-box-body">

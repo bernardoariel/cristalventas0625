@@ -41,9 +41,11 @@ foreach ($pagos as $key => $value) {
   $valor = $value['idventa'];
   $ventasxFecha = ControladorVentas::ctrMostrarVentas($item,$valor);
 
-  if($ventasxFecha['fecha']!=$value['fecha']){
-
-    $importeCtaCorriente = $importeCtaCorriente+$value['importe'];
+  // Verificar que $ventasxFecha sea un array y no false
+  if($ventasxFecha !== false && is_array($ventasxFecha) && 
+     isset($ventasxFecha['fecha']) && isset($value['fecha']) && 
+     $ventasxFecha['fecha'] != $value['fecha']) {
+    $importeCtaCorriente = $importeCtaCorriente + $value['importe'];
   }
 
 

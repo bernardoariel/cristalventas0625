@@ -12,6 +12,37 @@ if(isset($_GET["fechaInicial"])){
   $fechaInicial = date('Y-m-d');
   $fechaFinal = date('Y-m-d');
 }
+/* ====== ASEGURAR CAJA (poner este bloque ac�) ====== */
+// Crea caja si no existe para una fecha dada (idempotente)
+function asegurarCajaParaFecha(string $fecha): void {
+  $existe = ControladorCaja::ctrMostrarCaja('fecha', $fecha);
+  if (empty($existe) || (is_array($existe) && count($existe) === 0)) {
+    $datos = [
+      "fecha"            => $fecha,
+      "efectivo"         => 0,
+      "tarjeta"          => 0,
+      "cheque"           => 0,
+      "transferencia"    => 0,
+      "cuenta_corriente" => 0,
+      "vale"             => 0,
+    ];
+    ControladorCaja::ctrIngresarCaja('fecha', $datos);
+  }
+}
+
+// Si hay rango en la URL, asegur� todas las fechas del rango; si no, solo hoy
+if (isset($_GET["fechaInicial"], $_GET["fechaFinal"])) {
+  $ini = new DateTime($fechaInicial);
+  $fin = new DateTime($fechaFinal); 
+  $fin->modify('+1 day'); // incluir fecha final
+  foreach (new DatePeriod($ini, new DateInterval('P1D'), $fin) as $d) {
+    asegurarCajaParaFecha($d->format('Y-m-d'));
+  }
+} else {
+  asegurarCajaParaFecha(date('Y-m-d'));
+}
+/* ====== /ASEGURAR CAJA ====== */
+
 
 // Obtener datos de caja por rango de fechas
 $caja = ControladorCaja::ctrRangoFechasCaja($fechaInicial, $fechaFinal);
@@ -40,6 +71,9 @@ $stockValorizado = ControladorProductos::ctrStockValorizado();
 // Obtener ventas por rango de fechas
 $ventasCant = ControladorVentas::ctrContarVentasRango($fechaInicial, $fechaFinal);
 
+require_once "controladores/gastos.controlador.php";
+require_once "modelos/gastos.modelo.php";
+$gastosDia = ControladorGastos::ctrSumaGastosDia(date('Y-m-d'));
 ?>
 <div class="col-lg-6">
 
@@ -131,7 +165,7 @@ $ventasCant = ControladorVentas::ctrContarVentasRango($fechaInicial, $fechaFinal
           
           <div class="inner">
             
-            <h3>$<?php echo number_format($ventas["total"],2); ?></h3>
+            <h3>$<?php echo number_format($ventas["total"] ?? 0, 2); ?></h3>
 
             <p>Total de Ventas</p>
           
@@ -184,7 +218,7 @@ $ventasCant = ControladorVentas::ctrContarVentasRango($fechaInicial, $fechaFinal
 
        <div class="col-lg-6">
 
-        <div class="small-box bg-dark">
+        <div class="small-box bg-navy">
           
           <div class="inner">
 
@@ -211,35 +245,7 @@ $ventasCant = ControladorVentas::ctrContarVentasRango($fechaInicial, $fechaFinal
 
        </div>
 
-      <!-- 
-       <div class="col-lg-3">
-
-        <div class="small-box bg-green">
-          
-          <div class="inner">
-
-             <h3>$<?php echo number_format($totalCta,2); ?></h3>
-
-             <p>Total de Cuenta Corriente</p>
-
-          
-          </div>
-          
-          <div class="icon">
-          
-            <i class="ion ion-clipboard"></i>
-          
-          </div>
-          
-          <a href="caja" class="small-box-footer">
-            
-            Más info <i class="fa fa-arrow-circle-right"></i>
-          
-          </a>
-
-        </div>
-
-       </div> -->
+     
 
       <div class="col-lg-6">
 
@@ -270,9 +276,22 @@ $ventasCant = ControladorVentas::ctrContarVentasRango($fechaInicial, $fechaFinal
 
        </div>
 
-       
+       <div class="col-lg-4">
+      <div class="small-box bg-info">
+        <div class="inner">
+          <h3>$<?php echo number_format($gastosDia,2); ?></h3>
+          <p>Gastos del día</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-sun-o"></i>
+        </div>
+        <a href="gastos" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
 
-<div class="col-lg-4 col-xs-6">
+<div class="col-lg-4">
 
     <div class="small-box bg-blue">
       
@@ -373,22 +392,22 @@ $ventasCant = ControladorVentas::ctrContarVentasRango($fechaInicial, $fechaFinal
 
 <script>
 $(document).ready(function() {
-  console.log('Script cargado en cajas-superiores gotas');
+  console.log('Script cargado en cajas-superiores');
   
   // Verificar si el botón existe
   if($('#daterange-btn-caja').length > 0) {
-    console.log('Botón encontrado en gotas');
+    console.log('Botón encontrado');
   } else {
-    console.log('Botón NO encontrado en gotas');
+    console.log('Botón NO encontrado');
     return;
   }
   
   // Verificar si daterangepicker está disponible
   if(typeof $.fn.daterangepicker === 'undefined') {
-    console.log('Daterangepicker NO está disponible en gotas');
+    console.log('Daterangepicker NO está disponible');
     return;
   } else {
-    console.log('Daterangepicker está disponible en gotas');
+    console.log('Daterangepicker está disponible');
   }
   
   // DATERANGEPICKER PARA CAJA
@@ -420,7 +439,7 @@ $(document).ready(function() {
     }
   );
 
-  console.log('Daterangepicker inicializado en gotas');
+  console.log('Daterangepicker inicializado');
 });
 </script>
 

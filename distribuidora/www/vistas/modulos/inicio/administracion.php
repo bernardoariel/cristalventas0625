@@ -13,7 +13,7 @@ if(isset($_GET["fechaInicial"])){
   $fechaFinal = date('Y-m-d');
 }
 
-/* ====== ASEGURAR CAJA (poner este bloque ac�) ====== */
+/* ====== ASEGURAR CAJA (poner este bloque ac�) ====== */
 // Crea caja si no existe para una fecha dada (idempotente)
 function asegurarCajaParaFecha(string $fecha): void {
   $existe = ControladorCaja::ctrMostrarCaja('fecha', $fecha);
@@ -31,7 +31,7 @@ function asegurarCajaParaFecha(string $fecha): void {
   }
 }
 
-// Si hay rango en la URL, asegur� todas las fechas del rango; si no, solo hoy
+// Si hay rango en la URL, asegur� todas las fechas del rango; si no, solo hoy
 if (isset($_GET["fechaInicial"], $_GET["fechaFinal"])) {
   $ini = new DateTime($fechaInicial);
   $fin = new DateTime($fechaFinal); 
@@ -52,12 +52,14 @@ $totalEfectivo = 0;
 $totalTarjeta = 0;
 $totalCta = 0;
 $totalVale = 0;
+$totalTransferencia = 0;
 
 foreach($caja as $registro){
   $totalEfectivo += $registro['efectivo'];
   $totalTarjeta += $registro['tarjeta'];
   $totalCta += $registro['cuenta_corriente'];
   $totalVale += $registro['vale'];
+  $totalTransferencia += $registro['transferencia'] ?? 0;
 }
 
 $item = null;
@@ -70,6 +72,9 @@ $stockValorizado = ControladorProductos::ctrStockValorizado();
 
 // Obtener ventas por rango de fechas
 $ventasCant = ControladorVentas::ctrContarVentasRango($fechaInicial, $fechaFinal);
+
+// Obtener ganancia por rango de fechas
+$ganancia = ControladorVentas::ctrCalcularGananciaEntreFechas($fechaInicial, $fechaFinal);
 
 require_once "controladores/gastos.controlador.php";
 require_once "modelos/gastos.modelo.php";
@@ -157,282 +162,174 @@ $gastosDia = ControladorGastos::ctrSumaGastosDia(date('Y-m-d'));
   </div>
 
   <div class="box-body">
-
-
-      <div class="col-lg-6">
-
-        <div class="small-box bg-red">
-          
-          <div class="inner">
-            
-            <h3>$<?php echo number_format($ventas["total"] ?? 0, 2); ?></h3>
-
-            <p>Total de Ventas</p>
-          
-          </div>
-          
-          <div class="icon">
-            
-            <i class="fa fa-line-chart"></i>
-          
-          </div>
-          
-          <a href="ventas" class="small-box-footer">
-            
-            Más info <i class="fa fa-arrow-circle-right"></i>
-          
-          </a>
-
+      
+    <!-- FILA 1: Total Ventas (6) - Total Efectivo (6) -->
+    <div class="col-lg-6">
+      <div class="small-box bg-red">
+        <div class="inner">
+          <h3>$<?php echo number_format($ventas["total"] ?? 0, 2); ?></h3>
+          <p>Total de Ventas</p>
         </div>
-
-      </div>
-
-      <div class="col-lg-6">
-
-        <div class="small-box bg-blue">
-          
-          <div class="inner">
-
-             <h3>$<?php echo number_format($totalEfectivo,2); ?></h3>
-
-             <p>Total de Efectivo</p>
-
-          
-          </div>
-          
-          <div class="icon">
-          
-            <i class="fa fa-usd"></i>
-          
-          </div>
-          
-          <a href="caja" class="small-box-footer">
-            
-            Más info <i class="fa fa-arrow-circle-right"></i>
-          
-          </a>
-
+        <div class="icon">
+          <i class="fa fa-line-chart"></i>
         </div>
+        <a href="ventas" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
 
-       </div>
-
-       <div class="col-lg-6">
-
-        <div class="small-box bg-dark">
-          
-          <div class="inner">
-
-             <h3><?php echo $ventasCant[0]; ?></h3>
-
-             <p>Cantidad de Ventas</p>
-
-          
-          </div>
-          
-          <div class="icon">
-          
-            <i class="ion ion-clipboard"></i>
-          
-          </div>
-          
-          <a href="caja" class="small-box-footer">
-            
-            Más info <i class="fa fa-arrow-circle-right"></i>
-          
-          </a>
-
+    <div class="col-lg-6">
+      <div class="small-box bg-blue">
+        <div class="inner">
+          <h3>$<?php echo number_format($totalEfectivo,2); ?></h3>
+          <p>Total de Efectivo</p>
         </div>
-
-       </div>
-
-      <!-- 
-       <div class="col-lg-3">
-
-        <div class="small-box bg-green">
-          
-          <div class="inner">
-
-             <h3>$<?php echo number_format($totalCta,2); ?></h3>
-
-             <p>Total de Cuenta Corriente</p>
-
-          
-          </div>
-          
-          <div class="icon">
-          
-            <i class="ion ion-clipboard"></i>
-          
-          </div>
-          
-          <a href="caja" class="small-box-footer">
-            
-            Más info <i class="fa fa-arrow-circle-right"></i>
-          
-          </a>
-
+        <div class="icon">
+          <i class="fa fa-usd"></i>
         </div>
+        <a href="caja" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
 
-       </div> -->
-
-      <div class="col-lg-6">
-
-        <div class="small-box bg-green">
-          
-          <div class="inner">
-
-             <h3>$<?php echo number_format($totalTarjeta,2); ?></h3>
-
-             <p>Total de Tarjetas</p>
-
-          
-          </div>
-          
-          <div class="icon">
-          
-            <i class="fa fa-credit-card"></i>
-          
-          </div>
-          
-          <a href="caja" class="small-box-footer">
-            
-            Más info <i class="fa fa-arrow-circle-right"></i>
-          
-          </a>
-
+    <!-- FILA 2: Total Transferencias - Total Tarjetas -->
+    <div class="col-lg-6">
+      <div class="small-box bg-teal">
+        <div class="inner">
+          <h3>$<?php echo number_format($totalTransferencia,2); ?></h3>
+          <p>Total de Transferencias</p>
         </div>
-
-       </div>
-
-       <div class="col-lg-8">
-
-  <div class="small-box bg-yellow">
-    
-    <div class="inner">
-    
-      <h3><?php echo  number_format($stockValorizado['resultado'],2); ?></h3>
-
-      <p>Stock Valorizado</p>
-  
-    </div>
-    
-    <div class="icon">
-    
-      <i class="fa fa-dropbox"></i>
-    
-    </div>
-    
-    <a href="productos" class="small-box-footer">
-
-      Más info <i class="fa fa-arrow-circle-right"></i>
-
-    </a>
-
-  </div>
-
-</div>
-
-<div class="col-lg-4 col-xs-6">
-
-    <div class="small-box bg-blue">
-      
-      <div class="inner">
-      
-       <h3><?php echo  number_format($totalVale,2); ?></h3>
-
-        <p>Vales</p>
-      
+        <div class="icon">
+          <i class="fa fa-exchange"></i>
+        </div>
+        <a href="caja" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
       </div>
-      
-      <div class="icon">
-      
-        <i class="fa fa fa-building"></i>
-      
-      </div>
-      
-      <a href="vales" class="small-box-footer">
-        
-        Más info <i class="fa fa-arrow-circle-right"></i>
-      
-      </a>
-
     </div>
 
-</div>
-
-<div class="col-lg-4 col-xs-6">
-
-    <div class="small-box bg-purple">
-      
-      <div class="inner">
-      
-       <h3>Videos</h3>
-
-        <p>videos explicativos</p>
-        <p>Uso del Programa</p>
-      
+    <div class="col-lg-6">
+      <div class="small-box bg-green">
+        <div class="inner">
+          <h3>$<?php echo number_format($totalTarjeta,2); ?></h3>
+          <p>Total de Tarjetas</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-credit-card"></i>
+        </div>
+        <a href="caja" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
       </div>
-      
-      <div class="icon">
-      
-        <i class="fa fa-file-video-o"></i>
-      
-      </div>
-      
-      <a href="videos" class="small-box-footer">
-        
-        Más info <i class="fa fa-arrow-circle-right"></i>
-      
-      </a>
-
     </div>
 
-    
-    
-
-</div>
-<div class="col-lg-6">
-  <div class="small-box bg-info">
-    <div class="inner">
-      <h3>$<?php echo number_format($gastosDia,2); ?></h3>
-      <p>Gastos del día</p>
-    </div>
-    <div class="icon">
-      <i class="fa fa-sun-o"></i>
-    </div>
-    <a href="gastos" class="small-box-footer">
-      Más info <i class="fa fa-arrow-circle-right"></i>
-    </a>
-  </div>
-</div>
-<!-- <div class="col-lg-8 col-xs-6">
-
-    <div class="small-box bg-red">
-      
-      <div class="inner">
-      
-       <h3>Copia Seguridad</h3>
-
-        <p>Copia de Seguridad</p>
-       <small> <p id="ultimaBd">Ultima: <?php echo $ultimaFechaActualizacion['fecha'];  ?></p></small>
-      
+    <!-- FILA 3: Vales - Cantidad Ventas (4) - Gastos -->
+    <div class="col-lg-4">
+      <div class="small-box bg-blue">
+        <div class="inner">
+          <h3>$<?php echo number_format($totalVale,2); ?></h3>
+          <p>Vales</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-building"></i>
+        </div>
+        <a href="vales" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
       </div>
-      
-      <div class="icon">
-      
-        <i class="fa fa-refresh"></i>
-      
-      </div>
-      
-      <a href="index.php?ruta=serverbk&actualizarServer=1" class="small-box-footer">
-        
-        Realice su copia AHORA <i class="fa fa-arrow-circle-right"></i>
-      
-      </a>
-
     </div>
 
-</div> -->
+    <div class="col-lg-4">
+      <div class="small-box bg-navy">
+        <div class="inner">
+          <h3><?php echo $ventasCant[0]; ?></h3>
+          <p>Cantidad de Ventas</p>
+        </div>
+        <div class="icon">
+          <i class="ion ion-clipboard"></i>
+        </div>
+        <a href="ventas" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="small-box bg-info">
+        <div class="inner">
+          <h3>$<?php echo number_format($gastosDia,2); ?></h3>
+          <p>Gastos del día</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-sun-o"></i>
+        </div>
+        <a href="gastos" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- FILA 4: Stock Valorizado (6) - Ganancia (6) -->
+    <div class="col-lg-6">
+      <div class="small-box bg-yellow">
+        <div class="inner">
+          <h3>$<?php echo number_format($stockValorizado['resultado'],2); ?></h3>
+          <p>Stock Valorizado</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-dropbox"></i>
+        </div>
+        <a href="productos" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="small-box bg-orange">
+        <div class="inner">
+          <?php 
+            $gananciaData = $ganancia ?? array("ganancia" => 0, "total_costo" => 0, "productos_sin_costo" => 0);
+            $totalCosto = $gananciaData["total_costo"] ?? 0;
+            $productosSinCosto = $gananciaData["productos_sin_costo"] ?? 0;
+            $gananciaCalculada = $gananciaData["ganancia"] ?? 0;
+          ?>
+          
+          <?php if($totalCosto == 0 && $productosSinCosto > 0): ?>
+            <h3><small>Sin datos</small></h3>
+            <p>Ganancia
+              <br><small style="color: #fff; opacity: 0.8;">
+                Falta configurar precios de costo en productos
+              </small>
+            </p>
+          <?php else: ?>
+            <h3>$<?php echo number_format($gananciaCalculada, 2); ?></h3>
+            <p>Ganancia
+              <?php if($productosSinCosto > 0): ?>
+                <br><small style="color: #fff; opacity: 0.8;">
+                  <?php echo $productosSinCosto; ?> productos sin precio de costo
+                </small>
+              <?php endif; ?>
+            </p>
+          <?php endif; ?>
+        </div>
+        <div class="icon">
+          <i class="fa fa-line-chart"></i>
+        </div>
+        <a href="productos" class="small-box-footer">
+          Configurar precios <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+        <!-- FILA 5: Videos -->
+        <div class="col-lg-12">
+          <div class="alert alert-info" style="margin-bottom: 20px; padding: 8px 15px;">
+            <i class="fa fa-video-camera"></i> Videos - Tutoriales y ayuda disponibles. <a href="videos" class="alert-link">Ver videos</a>
+          </div>
+        </div>
 </div></div></div>
 
 </div>

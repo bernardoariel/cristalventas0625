@@ -346,7 +346,7 @@ class ControladorVentas{
 				  }
 
 				  echo '<script>
-					window.open("extensiones/tcpdf2/pdf/'.$_SESSION["TIPOFACTURA"].'.php?codigo='.$_POST["nuevaVentaForm"].'","FACTURA",1,2);
+					window.open("extensiones/pdf8/venta.php?codigo='.$_POST["nuevaVentaForm"].'","FACTURA",1,2);
 				  window.location = "ventas";</script>';
 
 
@@ -1036,7 +1036,7 @@ class ControladorVentas{
 			CREAMOS EL ARCHIVO DE EXCEL
 			=============================================*/
 
-			$Name = $_GET["reporte"] . '.xls';
+			$Name = 'Reporte-Ventas'. '.xls';
 
 			header('Expires: 0');
 			header('Cache-control: private');
@@ -1214,9 +1214,8 @@ static public function ctrRealizarPagoVenta(){
 		 //         //  		$tarjeta = $tarjeta + $_POST["totalVentaPago"];
 		 //         //  		break;
 		 //         //  	case 'CHEQUE':
-		 //         //  		# code...
-		 //         //  		$cheque = $cheque + $_POST["totalVentaPago"];
-		 //         //  		break;
+			//         //  		# code...
+			//         //  		$cheque = $cheque + $_POST["totalVentaPago"];
 			//         //  	case 'TRANSFERENCIA':
 			//         //  		# code...
 			//         //  		$transferencia = $transferencia + $_POST["totalVentaPago"];

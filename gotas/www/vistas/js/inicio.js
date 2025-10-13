@@ -215,8 +215,9 @@ $(".tablaProductosInicio").on("click", ".btnImprimirItem", function(){
   var idItemPrint = $(this).attr("iditemprint");
   var tipoFactura = $(this).attr("tipoFactura");
  
-  window.open("extensiones/tcpdf2/pdf/"+tipoFactura+"_presupuesto_unitario.php?item="+idItemPrint);
   
+  window.open("extensiones/pdf8/presupuesto_unitario.php?item=" + idItemPrint);
+
   })
 /*=============================================
 HACER FOCO EN NOMBRE DE CATEGORIA CUANDO AGREGO

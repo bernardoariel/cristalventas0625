@@ -25,7 +25,7 @@ class TablaProductosInicial{
 		for($i = 0; $i < count($productos); $i++){
 
 		   $botones ="";
-		//    $botones ="<button class='btn btn-info btnImprimirItem' tipoFactura='". $_GET['tipo']."' idItemPrint='".$productos[$i]['id']."'><i class='fa fa-print'></i></button>";
+		   $botones ="<button class='btn btn-info btnImprimirItem' tipoFactura='". $_GET['tipo']."' idItemPrint='".$productos[$i]['id']."'><i class='fa fa-print'></i></button>";
 
 		  	$datosJson .='[
 		      "'.($i+1).'",

@@ -9,3 +9,5 @@ services:
       VIRTUAL_HOST: admin.gotasdecristal.com,admin.distribuidoraglavas.com
       LETSENCRYPT_HOST: admin.gotasdecristal.com,admin.distribuidoraglavas.com
       LETSENCRYPT_EMAIL: info@gotasdecristal.com
+      VIRTUAL_PORT: 80          # recomendada para nginx-proxy
+      UPLOAD_LIMIT: 64M         # opcional (importar dumps grandes)

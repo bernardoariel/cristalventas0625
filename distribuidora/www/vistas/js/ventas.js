@@ -901,7 +901,19 @@ $(".tablas").on("click", ".btnImprimirFactura", function(){
 	var codigoVenta = $(this).attr("codigoVenta");
 	var tipoFactura = $(this).attr("tipoFactura");
 	
-	window.open("extensiones/tcpdf2/pdf/"+tipoFactura+".php?codigo="+codigoVenta, "_blank");
+	// window.open("extensiones/tcpdf2/pdf/"+tipoFactura+".php?codigo="+codigoVenta, "_blank");
+	window.open("extensiones/pdf8/venta.php?codigo="+codigoVenta, "_blank");
+
+
+})
+$(".tablas").on("click", ".btnImprimirRecibo", function(){
+
+	var codigoVenta = $(this).attr("codigoVenta");
+
+	
+	// window.open("extensiones/tcpdf2/pdf/"+tipoFactura+".php?codigo="+codigoVenta, "_blank");
+	window.open("extensiones/pdf8/recibo.php?codigo="+codigoVenta, "_blank");
+
 
 })
 

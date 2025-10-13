@@ -1,9 +1,9 @@
 $(".tablas").on("click", ".btnImprimirFacturaCta", function(){
 
 	var codigoVenta = $(this).attr("codigoVenta");
-	window.open("extensiones/tcpdf2/pdf/factura.php?codigo="+codigoVenta, "_blank");
-
-
+	// window.open("extensiones/tcpdf2/pdf/factura.php?codigo="+codigoVenta, "_blank");
+window.open("extensiones/pdf8/venta.php?codigo="+codigoVenta, "_blank");
+ 
 })
 
 /*=============================================

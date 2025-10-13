@@ -50,7 +50,7 @@ class ControladorProductos{
 
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ\/.,&*()\[\] ]+$/', $_POST["nuevaDescripcion"]) &&
 			   preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ\/.,&*()\[\] ]+$/', $_POST["nuevoNombre"]) &&
-			   preg_match('/^[0-9.]+$/', $_POST["nuevoStock"]) ){
+			   preg_match('/^-?[0-9.]+$/', $_POST["nuevoStock"]) ){
 
 		   		
 
@@ -132,7 +132,7 @@ class ControladorProductos{
 
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ\/.,&*()\[\] ]+$/', $_POST["editarDescripcion"]) &&
 			   preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ\/.,&*()\[\] ]+$/', $_POST["editarNombre"]) &&
-			   preg_match('/^[0-9.]+$/', $_POST["editarStock"]) &&	
+			   preg_match('/^-?[0-9.]+$/', $_POST["editarStock"]) &&	
 			   preg_match('/^[0-9.]+$/', $_POST["editarPrecioVenta"])){
 
 				$tabla = "productos";

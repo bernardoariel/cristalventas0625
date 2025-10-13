@@ -282,16 +282,7 @@ echo '
 							</a>
 
 						</li>
-						<li>
-
-							<a href="presupuestos">
-								
-								<i class="fa fa-file"></i>
-								<span>Presupuestos</span>
-
-							</a>
-
-						</li>
+						
 						<li>
 
 							<a href="productos-ventas">
@@ -410,16 +401,7 @@ echo '
 
 						</li>
 
-						<li>
-
-							<a href="presupuestos">
-								
-								<i class="fa fa-file"></i>
-								<span>Presupuestos</span>
-
-							</a>
-
-						</li>
+						
 						<li>
 
 							<a href="productos-ventas">

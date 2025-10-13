@@ -125,8 +125,20 @@ docker compose down
 3. `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
 4. Instalar TCPDF en cada web (Composer dentro del contenedor). 
 5. Subir el archivo factura para ver que este funcionando en la raiz de cada proyecto
+----- en este punto podemos probar
+adaptacion para 
+```
+# Distribuidora
+mkdir -p distribuidora/www/extensiones/pdf8/templates
 
+# Gotas
+mkdir -p gotas/www/extensiones/pdf8/templates
 
+```
+Tip: si primero armás los archivos en distribuidora, copiá a gotas con:
+```
+cp -r distribuidora/www/extensiones/pdf8 gotas/www/extensiones/
+```
 (--no-deps evita tocar las DB).
 
 ✅ Reiniciar proxy/letsencrypt/phpmyadmin no afecta a MySQL.
@@ -142,3 +154,7 @@ docker exec distribuidora_db sh -c 'mysqldump -uroot -proot --databases distribu
 docker exec gotas_db sh -c 'mysqldump -uroot -proot --databases gotas' > gotas_$(date +%F).sql
 
 ```
+
+El problema de que la caja no se registraba es porque tanto cajas-superiores como administracion son los que inician la caja
+yo probe como superadmin y ese entra en administracion
+pero cuando es un usuario comun no inicia la caja.

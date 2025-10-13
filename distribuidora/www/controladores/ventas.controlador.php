@@ -346,7 +346,7 @@ class ControladorVentas{
 				  }
 
 				  echo '<script>
-					window.open("extensiones/tcpdf2/pdf/'.$_SESSION["TIPOFACTURA"].'.php?codigo='.$_POST["nuevaVentaForm"].'","FACTURA",1,2);
+					window.open("extensiones/pdf8/venta.php?codigo='.$_POST["nuevaVentaForm"].'","FACTURA",1,2);
 				  window.location = "ventas";</script>';
 
 
@@ -1565,6 +1565,20 @@ static public function ctrbKVentas($tabla, $item, $valor,$tipo){
 		$tabla = "ventas";
 
 		$respuesta = ModeloVentas::mdlContarVentasRango($tabla, $fechaInicial, $fechaFinal);
+
+		return $respuesta;
+
+	}
+
+	/*=============================================
+	CALCULAR GANANCIA ENTRE FECHAS
+	=============================================*/
+
+	public static function ctrCalcularGananciaEntreFechas($fechaInicial, $fechaFinal){
+
+		$tabla = "ventas";
+
+		$respuesta = ModeloVentas::mdlCalcularGananciaEntreFechas($tabla, $fechaInicial, $fechaFinal);
 
 		return $respuesta;
 

@@ -6,10 +6,7 @@ $valor = null;
 $empresa = ControladorEmpresa::ctrMostrarEmpresa($item, $valor);
 
 ?>
-<div id="back">
-  
- 
-</div>
+<div id="back"></div>
 
 <div class="login-box">
   

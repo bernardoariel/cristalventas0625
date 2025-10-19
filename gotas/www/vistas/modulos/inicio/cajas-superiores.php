@@ -52,12 +52,14 @@ $totalEfectivo = 0;
 $totalTarjeta = 0;
 $totalCta = 0;
 $totalVale = 0;
+$totalTransferencia = 0;
 
 foreach($caja as $registro){
   $totalEfectivo += $registro['efectivo'];
   $totalTarjeta += $registro['tarjeta'];
   $totalCta += $registro['cuenta_corriente'];
   $totalVale += $registro['vale'];
+  $totalTransferencia += $registro['transferencia'] ?? 0;
 }
 
 $item = null;
@@ -157,126 +159,101 @@ $gastosDia = ControladorGastos::ctrSumaGastosDia(date('Y-m-d'));
   </div>
 
   <div class="box-body">
-
-
-      <div class="col-lg-6">
-
-        <div class="small-box bg-red">
-          
-          <div class="inner">
-            
-            <h3>$<?php echo number_format($ventas["total"] ?? 0, 2); ?></h3>
-
-            <p>Total de Ventas</p>
-          
-          </div>
-          
-          <div class="icon">
-            
-            <i class="fa fa-line-chart"></i>
-          
-          </div>
-          
-          <a href="ventas" class="small-box-footer">
-            
-            Más info <i class="fa fa-arrow-circle-right"></i>
-          
-          </a>
-
+      
+    <!-- FILA 1: Total Ventas (6) - Total Efectivo (6) -->
+    <div class="col-lg-6">
+      <div class="small-box bg-red">
+        <div class="inner">
+          <h3>$<?php echo number_format($ventas["total"] ?? 0, 2); ?></h3>
+          <p>Total de Ventas</p>
         </div>
-
+        <div class="icon">
+          <i class="fa fa-line-chart"></i>
+        </div>
+        <a href="ventas" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
       </div>
+    </div>
 
-      <div class="col-lg-6">
-
-        <div class="small-box bg-blue">
-          
-          <div class="inner">
-
-             <h3>$<?php echo number_format($totalEfectivo,2); ?></h3>
-
-             <p>Total de Efectivo</p>
-
-          
-          </div>
-          
-          <div class="icon">
-          
-            <i class="fa fa-usd"></i>
-          
-          </div>
-          
-          <a href="caja" class="small-box-footer">
-            
-            Más info <i class="fa fa-arrow-circle-right"></i>
-          
-          </a>
-
+    <div class="col-lg-6">
+      <div class="small-box bg-blue">
+        <div class="inner">
+          <h3>$<?php echo number_format($totalEfectivo,2); ?></h3>
+          <p>Total de Efectivo</p>
         </div>
-
-       </div>
-
-       <div class="col-lg-6">
-
-        <div class="small-box bg-navy">
-          
-          <div class="inner">
-
-             <h3><?php echo $ventasCant[0]; ?></h3>
-
-             <p>Cantidad de Ventas</p>
-
-          
-          </div>
-          
-          <div class="icon">
-          
-            <i class="ion ion-clipboard"></i>
-          
-          </div>
-          
-          <a href="caja" class="small-box-footer">
-            
-            Más info <i class="fa fa-arrow-circle-right"></i>
-          
-          </a>
-
+        <div class="icon">
+          <i class="fa fa-usd"></i>
         </div>
+        <a href="caja" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
 
-       </div>
-
-     
-
-      <div class="col-lg-6">
-
-        <div class="small-box bg-green">
-          
-          <div class="inner">
-
-             <h3>$<?php echo number_format($totalTarjeta,2); ?></h3>
-
-             <p>Total de Tarjetas</p>
-
-          
-          </div>
-          
-          <div class="icon">
-          
-            <i class="fa fa-credit-card"></i>
-          
-          </div>
-          
-          <a href="caja" class="small-box-footer">
-            
-            Más info <i class="fa fa-arrow-circle-right"></i>
-          
-          </a>
-
+    <!-- FILA 2: Total Transferencias - Total Tarjetas -->
+    <div class="col-lg-6">
+      <div class="small-box bg-teal">
+        <div class="inner">
+          <h3>$<?php echo number_format($totalTransferencia,2); ?></h3>
+          <p>Total de Transferencias</p>
         </div>
+        <div class="icon">
+          <i class="fa fa-exchange"></i>
+        </div>
+        <a href="caja" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
 
-       </div>
+    <div class="col-lg-6">
+      <div class="small-box bg-green">
+        <div class="inner">
+          <h3>$<?php echo number_format($totalTarjeta,2); ?></h3>
+          <p>Total de Tarjetas</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-credit-card"></i>
+        </div>
+        <a href="caja" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
 
-       <div class="col-lg-4">
+    <!-- FILA 3: Vales - Cantidad Ventas (4) - Gastos -->
+    <div class="col-lg-4">
+      <div class="small-box bg-blue">
+        <div class="inner">
+          <h3>$<?php echo number_format($totalVale,2); ?></h3>
+          <p>Vales</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-building"></i>
+        </div>
+        <a href="vales" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="small-box bg-navy">
+        <div class="inner">
+          <h3><?php echo $ventasCant[0]; ?></h3>
+          <p>Cantidad de Ventas</p>
+        </div>
+        <div class="icon">
+          <i class="ion ion-clipboard"></i>
+        </div>
+        <a href="ventas" class="small-box-footer">
+          Más info <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
       <div class="small-box bg-info">
         <div class="inner">
           <h3>$<?php echo number_format($gastosDia,2); ?></h3>
@@ -291,64 +268,12 @@ $gastosDia = ControladorGastos::ctrSumaGastosDia(date('Y-m-d'));
       </div>
     </div>
 
-<div class="col-lg-4">
-
-    <div class="small-box bg-blue">
-      
-      <div class="inner">
-      
-       <h3><?php echo  number_format($totalVale,2); ?></h3>
-
-        <p>Vales</p>
-      
-      </div>
-      
-      <div class="icon">
-      
-        <i class="fa fa fa-building"></i>
-      
-      </div>
-      
-      <a href="vales" class="small-box-footer">
-        
-        Más info <i class="fa fa-arrow-circle-right"></i>
-      
-      </a>
-
-    </div>
-
-</div>
-
-<div class="col-lg-4">
-
-    <div class="small-box bg-purple">
-      
-      <div class="inner">
-      
-       <h3>Videos</h3>
-
-        <p>videos explicativos</p>
-      
-      </div>
-      
-      <div class="icon">
-      
-        <i class="fa fa-file-video-o"></i>
-      
-      </div>
-      
-      <a href="videos" class="small-box-footer">
-        
-        Más info <i class="fa fa-arrow-circle-right"></i>
-      
-      </a>
-
-    </div>
-  
-
-</div>
-
-<!-- <div class="col-lg-4 col-xs-4">
+        <!-- FILA 4: Videos -->
+        <div class="col-lg-12">
+          <div class="alert alert-info" style="margin-bottom: 20px; padding: 8px 15px;">
+            <i class="fa fa-video-camera"></i> Videos - Tutoriales y ayuda disponibles. <a href="videos" class="alert-link">Ver videos</a>
+          </div>
+        </div><!-- <div class="col-lg-4 col-xs-4">
 
     <div class="small-box <?php echo $colorCaja; ?>">
       

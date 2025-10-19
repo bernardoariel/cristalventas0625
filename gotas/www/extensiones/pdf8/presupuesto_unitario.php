@@ -12,7 +12,7 @@ require_once __DIR__ . "/../../modelos/productos.modelo.php";
 $idItem    = isset($_GET['item']) ? (int)$_GET['item'] : 0;
 $producto  = ControladorProductos::ctrMostrarProductos('id', $idItem, 'id');
 
-$t = new TicketTemplate($EMPRESA, ['width'=>80,'height'=>180]);
+$t = new TicketTemplate($EMPRESA, ['width'=>55,'height'=>180]);
 
 $t->renderAuto(function (TicketTemplate $t) use ($producto) {
     // Encabezado
@@ -36,7 +36,7 @@ $t->renderAuto(function (TicketTemplate $t) use ($producto) {
         'fs'   => 9,
         'lh'   => 4.2,
         'desc_max_lines' => 2,
-        'w' => ['cant'=>12, 'desc'=>42, 'imp'=>18],
+        'w' => ['cant'=>8, 'desc'=>30, 'imp'=>12],
     ]);
 
     // Footer

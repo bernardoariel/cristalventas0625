@@ -806,5 +806,78 @@ class ModeloVentas{
 
 	}
 
+	/*=============================================
+	CALCULAR GANANCIA ENTRE FECHAS
+	=============================================*/
+
+	static public function mdlCalcularGananciaEntreFechas($tabla, $fechaInicial, $fechaFinal){
+		
+		$stmt = Conexion::conectar()->prepare("
+			SELECT v.productos 
+			FROM $tabla v 
+			WHERE v.fecha BETWEEN :fechaInicial AND :fechaFinal
+		");
+
+		$stmt->bindParam(":fechaInicial", $fechaInicial, PDO::PARAM_STR);
+		$stmt->bindParam(":fechaFinal", $fechaFinal, PDO::PARAM_STR);
+		$stmt->execute();
+
+		$ventas = $stmt->fetchAll();
+		$gananciaTotal = 0;
+		$totalVentas = 0;
+		$totalCosto = 0;
+		$productosSinCosto = 0;
+
+		foreach($ventas as $venta){
+			$productos = json_decode($venta["productos"], true);
+			
+			if(is_array($productos)){
+				foreach($productos as $producto){
+					// Obtener precio de compra del producto
+					$stmtProducto = Conexion::conectar()->prepare("
+						SELECT precio_compra 
+						FROM productos 
+						WHERE id = :id
+					");
+					$stmtProducto->bindParam(":id", $producto["id"], PDO::PARAM_INT);
+					$stmtProducto->execute();
+					$productoData = $stmtProducto->fetch();
+					
+					if($productoData){
+						$cantidad = floatval($producto["cantidad"]);
+						$precioVenta = floatval($producto["precio"]);
+						$precioCompra = floatval($productoData["precio_compra"]);
+						
+						$ventaProducto = $cantidad * $precioVenta;
+						$costoProducto = $cantidad * $precioCompra;
+						
+						$totalVentas += $ventaProducto;
+						$totalCosto += $costoProducto;
+						
+						// Si el precio de compra es 0, contar como producto sin costo
+						if($precioCompra == 0){
+							$productosSinCosto++;
+						}
+						
+						// Calcular ganancia: (cantidad * precio_venta) - (cantidad * precio_compra)
+						$gananciaProducto = $ventaProducto - $costoProducto;
+						$gananciaTotal += $gananciaProducto;
+					}
+					
+					$stmtProducto->closeCursor();
+				}
+			}
+		}
+
+		$stmt->closeCursor();
+		
+		return array(
+			"ganancia" => $gananciaTotal,
+			"total_ventas" => $totalVentas,
+			"total_costo" => $totalCosto,
+			"productos_sin_costo" => $productosSinCosto
+		);
+	}
+
 	
 }

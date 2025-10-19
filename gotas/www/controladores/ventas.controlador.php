@@ -1570,6 +1570,20 @@ static public function ctrbKVentas($tabla, $item, $valor,$tipo){
 
 	}
 
+	/*=============================================
+	CALCULAR GANANCIA ENTRE FECHAS
+	=============================================*/
+
+	public static function ctrCalcularGananciaEntreFechas($fechaInicial, $fechaFinal){
+
+		$tabla = "ventas";
+
+		$respuesta = ModeloVentas::mdlCalcularGananciaEntreFechas($tabla, $fechaInicial, $fechaFinal);
+
+		return $respuesta;
+
+	}
+
 
 }
 

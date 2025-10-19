@@ -130,6 +130,8 @@ MODAL AGREGAR PRODUCTO
 
             <div class="form-group">
               
+              <label>Categoría</label>
+              
               <div class="input-group">
               
                 <span class="input-group-addon"><i class="fa fa-th"></i></span> 
@@ -162,6 +164,8 @@ MODAL AGREGAR PRODUCTO
             
             <div class="form-group">
               
+              <label>Código</label>
+              
               <div class="input-group">
               
                 <span class="input-group-addon"><i class="fa fa-code"></i></span> 
@@ -177,6 +181,8 @@ MODAL AGREGAR PRODUCTO
             <!-- ENTRADA PARA LA nOMBRE -->
 
              <div class="form-group">
+              
+              <label>Nombre del producto</label>
               
               <div class="input-group">
               
@@ -195,7 +201,7 @@ MODAL AGREGAR PRODUCTO
             
             <div class="form-group">
               
-              
+              <label>Descripción</label>
               
                 <div class="input-group">
                   
@@ -213,6 +219,8 @@ MODAL AGREGAR PRODUCTO
              <!-- ENTRADA PARA STOCK -->
 
              <div class="form-group">
+              
+              <label>Stock</label>
               
               <div class="input-group">
               
@@ -234,6 +242,8 @@ MODAL AGREGAR PRODUCTO
 
                 <div class="col-xs-6">
                 
+                  <label>Precio de compra</label>
+                
                   <div class="input-group">
                   
                     <span class="input-group-addon"><i class="fa fa-arrow-up"></i></span> 
@@ -249,6 +259,8 @@ MODAL AGREGAR PRODUCTO
                 <!-- ENTRADA PARA PRECIO VENTA -->
 
                 <div class="col-xs-6">
+                
+                  <label>Precio de venta</label>
                 
                   <div class="input-group">
                   
@@ -366,6 +378,8 @@ MODAL EDITAR PRODUCTO
 
             <div class="form-group">
               
+              <label>Categoría</label>
+              
               <div class="input-group">
               
                 <span class="input-group-addon"><i class="fa fa-th"></i></span> 
@@ -398,6 +412,8 @@ MODAL EDITAR PRODUCTO
             
             <div class="form-group">
               
+              <label>Código</label>
+              
               <div class="input-group">
               
                 <span class="input-group-addon"><i class="fa fa-code"></i></span> 
@@ -411,6 +427,8 @@ MODAL EDITAR PRODUCTO
             <!-- ENTRADA PARA LA nOMBRE -->
 
              <div class="form-group">
+              
+              <label>Nombre del producto</label>
               
               <div class="input-group">
               
@@ -427,6 +445,8 @@ MODAL EDITAR PRODUCTO
 
              <div class="form-group">
               
+              <label>Descripción</label>
+              
               <div class="input-group">
               
                 <span class="input-group-addon"><i class="fa fa-product-hunt"></i></span> 
@@ -440,6 +460,8 @@ MODAL EDITAR PRODUCTO
              <!-- ENTRADA PARA STOCK -->
 
              <div class="form-group">
+              
+              <label>Stock</label>
               
               <div class="input-group">
               
@@ -457,6 +479,8 @@ MODAL EDITAR PRODUCTO
 
                 <div class="col-xs-6">
                 
+                  <label>Precio de compra</label>
+                
                   <div class="input-group">
                   
                     <span class="input-group-addon"><i class="fa fa-arrow-up"></i></span> 
@@ -471,6 +495,8 @@ MODAL EDITAR PRODUCTO
                 <!-- ENTRADA PARA PRECIO VENTA -->
 
                 <div class="col-xs-6">
+                
+                  <label>Precio de venta</label>
                 
                   <div class="input-group">
                   

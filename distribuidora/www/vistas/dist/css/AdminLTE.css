@@ -5687,3 +5687,63 @@ table.text-center th {
     white-space: normal !important;
   }
 }
+/* Footer de la small-box con 3 enlaces */
+.small-box .caja-footer{
+  display:flex !important;                 /* fuerza flex en AdminLTE */
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 12px;
+  background:rgba(0,0,0,.10);
+  border-top:1px solid rgba(255,255,255,.15);
+}
+.small-box .caja-footer a{
+  flex:1 1 0;                              /* los 3 ocupan el mismo ancho */
+  text-align:center;
+  color:#fff !important;                   /* texto/íconos blancos */
+  text-decoration:none;
+  font-weight:600;
+  /* padding:6px 0; */
+}
+.small-box .caja-footer a:not(:first-child){
+  border-left:1px solid rgba(255,255,255,.15);  /* separadores */
+}
+.small-box .caja-footer a:hover{
+  background:rgba(255,255,255,.12);
+}
+
+/* Fallback por si un navegador viejo no soporta flex */
+.no-flex .small-box .caja-footer{ display:table; width:100%; table-layout:fixed; }
+.no-flex .small-box .caja-footer a{ display:table-cell; }
+/* Igualar altura del box de Caja al de Ventas */
+.small-box.bg-purple {
+  min-height: 120px;   /* antes 150px → ahora más chico */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.small-box.bg-purple .caja-footer {
+  margin-top: auto;
+}
+.small-box .inner {
+  padding: 5px 15px 5px 15px; /* menos alto */
+}
+.small-box .caja-footer {
+  padding: 2px 10px;   /* achica la barra inferior */
+}
+/* el ícono no debe capturar el hover/click */
+.small-box .icon{ pointer-events:none; }
+
+/* el footer queda por encima del ícono */
+.small-box .caja-footer{ position:relative; z-index:1; }
+
+/* que los enlaces tengan área clicable completa */
+.small-box .caja-footer a{
+  display:block;        /* <— clave para que el bg en :hover cubra toda la celda */
+  padding:6px 0;        /* volvemos a un padding mínimo */
+}
+
+/* el hover ahora se ve siempre, también en el último */
+.small-box .caja-footer a:hover{
+  background:rgba(255,255,255,.12);
+}

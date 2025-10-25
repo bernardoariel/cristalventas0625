@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS caja_movimientos (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  fecha DATETIME NOT NULL,
+  tipo ENUM('INGRESO','EGRESO') NOT NULL,
+  monto DECIMAL(12,2) NOT NULL CHECK (monto > 0),
+  concepto VARCHAR(255) NULL,
+  saldo_posterior DECIMAL(12,2) NULL,
+  INDEX idx_fecha (fecha)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

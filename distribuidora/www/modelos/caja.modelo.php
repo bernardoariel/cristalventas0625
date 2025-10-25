@@ -151,3 +151,150 @@ class ModeloCaja{
 	
 }
 
+/*=============================================
+  NUEVO: MODELO DE MOVIMIENTOS DE CAJA
+=============================================*/
+class ModeloCajaMovimientos {
+
+  /*=============================================
+  CREAR MOVIMIENTO (INGRESO o EGRESO)
+  =============================================*/
+  static public function mdlRegistrarMovimiento($datos) {
+
+    $pdo = Conexion::conectar();
+
+    $stmt = $pdo->prepare("
+      INSERT INTO caja_movimientos (fecha, tipo, monto, concepto)
+      VALUES (:fecha, :tipo, :monto, :concepto)
+    ");
+
+    $stmt->bindParam(":fecha", $datos["fecha"], PDO::PARAM_STR);
+    $stmt->bindParam(":tipo", $datos["tipo"], PDO::PARAM_STR);
+    $stmt->bindParam(":monto", $datos["monto"], PDO::PARAM_STR);
+    $stmt->bindParam(":concepto", $datos["concepto"], PDO::PARAM_STR);
+
+    if($stmt->execute()){
+      return "ok";
+    }else{
+      return "error";
+    }
+
+    $stmt = null;
+  }
+
+  /*=============================================
+  OBTENER TODOS LOS MOVIMIENTOS
+  =============================================*/
+  static public function mdlMostrarMovimientos() {
+
+    $pdo = Conexion::conectar();
+    $stmt = $pdo->prepare("SELECT * FROM caja_movimientos ORDER BY fecha DESC, id DESC");
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /*=============================================
+  OBTENER SALDO ACTUAL DE EFECTIVO
+  =============================================*/
+  static public function mdlSaldoActual() {
+
+    $pdo = Conexion::conectar();
+    $stmt = $pdo->prepare("
+      SELECT 
+        COALESCE(SUM(CASE WHEN tipo='INGRESO' THEN monto ELSE -monto END),0) AS saldo
+      FROM caja_movimientos
+    ");
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC)["saldo"];
+  }
+
+  /*=============================================
+  CIERRE DIARIO (fecha, ingresos, egresos, neto, saldo acumulado)
+  =============================================*/
+  static public function mdlCierreDiario() {
+
+    $pdo = Conexion::conectar();
+
+    // agrupamos por día
+    $stmt = $pdo->prepare("
+      SELECT DATE(fecha) AS fecha,
+             SUM(CASE WHEN tipo='INGRESO' THEN monto ELSE 0 END) AS ingresos,
+             SUM(CASE WHEN tipo='EGRESO' THEN monto ELSE 0 END) AS egresos,
+             SUM(CASE WHEN tipo='INGRESO' THEN monto ELSE -monto END) AS neto
+      FROM caja_movimientos
+      GROUP BY DATE(fecha)
+      ORDER BY fecha ASC
+    ");
+    $stmt->execute();
+    $movimientos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // acumulamos saldo
+    $saldo = 0;
+    foreach ($movimientos as &$m) {
+      $saldo += $m["neto"];
+      $m["saldo_cierre"] = $saldo;
+    }
+
+    return $movimientos;
+  }
+  
+  /* === NUEVO: listar por rango === */
+  static public function mdlMovimientosRango($fi, $ff) {
+    $pdo = Conexion::conectar();
+
+    if ($fi && $ff) {
+      $stmt = $pdo->prepare("
+        SELECT * 
+        FROM caja_movimientos
+        WHERE DATE(fecha) BETWEEN :fi AND :ff
+        ORDER BY fecha DESC, id DESC
+      ");
+      $stmt->bindParam(':fi', $fi);
+      $stmt->bindParam(':ff', $ff);
+    } else { // hoy por defecto
+      $hoy = date('Y-m-d');
+      $stmt = $pdo->prepare("
+        SELECT * 
+        FROM caja_movimientos
+        WHERE DATE(fecha) = :hoy
+        ORDER BY fecha DESC, id DESC
+      ");
+      $stmt->bindParam(':hoy', $hoy);
+    }
+
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /* === NUEVO: totales por rango === */
+  static public function mdlTotalesRango($fi, $ff) {
+    $pdo = Conexion::conectar();
+    $sql = "
+      SELECT
+        COALESCE(SUM(CASE WHEN tipo='INGRESO' THEN monto END),0) AS ingresos,
+        COALESCE(SUM(CASE WHEN tipo='EGRESO'  THEN monto END),0) AS egresos,
+        COALESCE(SUM(CASE WHEN tipo='INGRESO' THEN monto ELSE -monto END),0) AS neto
+      FROM caja_movimientos
+      WHERE DATE(fecha) BETWEEN :fi AND :ff
+    ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':fi', $fi);
+    $stmt->bindParam(':ff', $ff);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  /* === NUEVO: totales día === */
+  static public function mdlTotalesDia($fecha) {
+    return self::mdlTotalesRango($fecha, $fecha);
+  }
+
+  /* === NUEVO: totales mes === */
+  static public function mdlTotalesMes($anio, $mes) {
+    $fi = sprintf('%04d-%02d-01', $anio, $mes);
+    $ff = date('Y-m-t', strtotime($fi));
+    return self::mdlTotalesRango($fi, $ff);
+  }
+}

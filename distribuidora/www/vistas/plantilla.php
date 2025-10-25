@@ -135,7 +135,7 @@ $validRoutes = [
     "ctacorriente", "informes", "respaldo", "backup", "serverbk", "buscar-venta-cliente", "buscar-venta-repuestos", 
     "clientes", "clientesNJ", "historial", "ventas", "videos", "crear-venta", "editar-venta", "registros", 
     "vales", "actualizar-precios", "iniciar-stock", "productos-ventas", "imprimiretiqueta", "editar-perfil", 
-    "reportes", "salir","gastos"
+    "reportes", "salir","gastos","movimientos-caja"
 ];
 
 // Si el usuario intenta acceder al buscador

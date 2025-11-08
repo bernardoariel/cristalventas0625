@@ -467,27 +467,8 @@ function listarProductos(){
 
     }
 
-    if(totalAdeuda_1==0){
-
-      if(totalVentasForm>0){
-
-
-
-        if ($("#idClienteForm").val().length>0) {
-
-          $("#btn-guardarVenta").removeAttr("disabled");
-
-        }
-        
-       
-
-      }
-
-    }else{
-
-      $("#btn-guardarVenta").attr("disabled", "disabled");
-
-    }
+    // USAR FUNCIÓN CENTRALIZADA PARA VALIDAR BOTÓN
+    validarBotonGuardarVenta();
 
 }
 
@@ -840,25 +821,8 @@ function listarPagos(){
     
     importeTotal = parseFloat($("#totalVentaForm").val()) - sumaDePagos;
     
-    if(totalAdeuda_1 == 0){
-      
-      if(totalVentas_1>0){
-        
-
-        if ($("#idClienteForm").val().length>0) {
-
-        
-          $("#btn-guardarVenta").removeAttr("disabled");
-
-        }
-
-      }
-
-    }else{
-
-      $("#btn-guardarVenta").attr("disabled", "disabled");
-
-    }
+    // USAR FUNCIÓN CENTRALIZADA PARA VALIDAR BOTÓN
+    validarBotonGuardarVenta();
 
   }
 
@@ -980,3 +944,51 @@ $("#btn-presupuesto").on("click",function(){
   })
 
 });
+
+/*=============================================
+VALIDAR CUANDO CAMBIA EL VENDEDOR
+=============================================*/
+$("#vendedorSeleccionado").on("change", function(){
+    
+    console.log("Cambió vendedor a:", $(this).val());
+    // Revalidar si se puede habilitar el botón de guardar venta
+    validarBotonGuardarVenta();
+    
+});
+
+/*=============================================
+FUNCIÓN PARA VALIDAR HABILITAR BOTÓN GUARDAR VENTA
+=============================================*/
+function validarBotonGuardarVenta() {
+    
+    console.log("Validando botón guardar venta:");
+    console.log("- Total adeuda:", totalAdeuda_1);
+    console.log("- Total ventas:", totalVentas_1);
+    console.log("- ID Cliente:", $("#idClienteForm").val());
+    console.log("- Vendedor seleccionado:", $("#vendedorSeleccionado").val());
+    
+    // Condiciones para habilitar el botón:
+    // 1. No debe adeudar nada (totalAdeuda_1 == 0)
+    // 2. Debe tener ventas (totalVentas_1 > 0)
+    // 3. Debe tener cliente seleccionado
+    // 4. Debe tener vendedor seleccionado (>= 1)
+    
+    if (totalAdeuda_1 == 0 && 
+        totalVentas_1 > 0 && 
+        $("#idClienteForm").val().length > 0 && 
+        parseInt($("#vendedorSeleccionado").val()) >= 1) {
+        
+        console.log("✅ Habilitando botón guardar venta");
+        $("#btn-guardarVenta").removeAttr("disabled");
+        
+    } else {
+        
+        console.log("❌ Deshabilitando botón guardar venta");
+        console.log("  - Adeuda cero:", totalAdeuda_1 == 0);
+        console.log("  - Tiene ventas:", totalVentas_1 > 0);
+        console.log("  - Tiene cliente:", $("#idClienteForm").val().length > 0);
+        console.log("  - Tiene vendedor:", parseInt($("#vendedorSeleccionado").val()) >= 1);
+        $("#btn-guardarVenta").attr("disabled", "disabled");
+        
+    }
+}

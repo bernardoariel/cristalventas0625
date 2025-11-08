@@ -1010,3 +1010,91 @@ $("#btn-bsqVentaProducto").on("click", function(){
 
 	window.location = "index.php?ruta=buscar-venta-repuestos&idProducto="+$("#productos").val();
 })
+
+/*=============================================
+CAMBIAR VENDEDOR DE UNA VENTA
+=============================================*/
+
+// Abrir modal para cambiar vendedor
+$('.tablas').on('click', '.btnCambiarVendedor', function(){
+	
+	var idVenta = $(this).attr('idVenta');
+	var vendedorActual = $(this).attr('vendedorActual');
+	
+	// Llenar los campos del modal
+	$('#idVentaCambiarVendedor').val(idVenta);
+	$('#vendedorActualCambio').val(vendedorActual);
+	
+	// Seleccionar el vendedor actual en el dropdown
+	$('#nuevoVendedor').val(vendedorActual);
+	
+	// Abrir el modal
+	$('#modalCambiarVendedor').modal('show');
+	
+});
+
+// Guardar cambio de vendedor
+$('#btnGuardarCambioVendedor').on('click', function(){
+	
+	var idVenta = $('#idVentaCambiarVendedor').val();
+	var nuevoVendedor = $('#nuevoVendedor').val();
+	
+	if(nuevoVendedor === ''){
+		
+		swal({
+			  type: "error",
+			  title: "¡Error!",
+			  text: "¡Debe seleccionar un vendedor!",
+			  confirmButtonText: "¡Cerrar!"
+		});
+		
+		return;
+	}
+	
+	var datos = new FormData();
+	datos.append("idVenta", idVenta);
+	datos.append("nuevoVendedor", nuevoVendedor);
+	
+	$.ajax({
+		url: "ajax/cambiar-vendedor.ajax.php",
+		method: "POST",
+		data: datos,
+		cache: false,
+		contentType: false,
+		processData: false,
+		dataType: "json",
+		success: function(respuesta){
+			
+			if(respuesta == "ok"){
+				
+				swal({
+					type: "success",
+					title: "¡Correcto!",
+					text: "¡El vendedor ha sido cambiado correctamente!",
+					confirmButtonText: "¡Cerrar!"
+				}).then(function(result){
+					
+					if(result.value){
+						
+						// Recargar la página para mostrar los cambios
+						window.location.reload();
+						
+					}
+					
+				});
+				
+			} else {
+				
+				swal({
+					type: "error",
+					title: "¡Error!",
+					text: "¡No se pudo cambiar el vendedor!",
+					confirmButtonText: "¡Cerrar!"
+				});
+				
+			}
+			
+		}
+	});
+	
+});

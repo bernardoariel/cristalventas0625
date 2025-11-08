@@ -70,7 +70,7 @@ class ModeloVentas{
 
 	static public function mdlIngresarVenta($tabla, $datos){
 
-		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(fecha,codigo, id_cliente,nombre,documento,tipo, id_vendedor, productos, impuesto, neto, total,adeuda,observaciones,metodo_pago,fechapago,referenciapago) VALUES (:fecha,:codigo, :id_cliente,:nombre,:documento,:tipo, :id_vendedor, :productos, :impuesto, :neto, :total,:adeuda,:obs, :metodo_pago,:fechapago,:referenciapago)");
+		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(fecha,codigo, id_cliente,nombre,documento,tipo, id_vendedor, productos, impuesto, neto, total,adeuda,observaciones,metodo_pago,fechapago,referenciapago,id_vendedor_venta) VALUES (:fecha,:codigo, :id_cliente,:nombre,:documento,:tipo, :id_vendedor, :productos, :impuesto, :neto, :total,:adeuda,:obs, :metodo_pago,:fechapago,:referenciapago,:id_vendedor_venta)");
 
 		$stmt->bindParam(":fecha", $datos["fecha"], PDO::PARAM_STR);
 		$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_STR);
@@ -89,6 +89,7 @@ class ModeloVentas{
 		$stmt->bindParam(":metodo_pago", $datos["metodo_pago"], PDO::PARAM_STR);
 		$stmt->bindParam(":referenciapago", $datos["referenciapago"], PDO::PARAM_STR);
 		$stmt->bindParam(":fechapago", $datos["fechapago"], PDO::PARAM_STR);
+		$stmt->bindParam(":id_vendedor_venta", $datos["id_vendedor_venta"], PDO::PARAM_STR);
 		
 		if($stmt->execute()){
 
@@ -877,6 +878,33 @@ class ModeloVentas{
 			"total_costo" => $totalCosto,
 			"productos_sin_costo" => $productosSinCosto
 		);
+	}
+
+	/*=============================================
+	CAMBIAR VENDEDOR DE UNA VENTA
+	=============================================*/
+
+	static public function mdlCambiarVendedorVenta($item, $valor, $nuevoVendedor){
+
+		$stmt = Conexion::conectar()->prepare("UPDATE ventas SET id_vendedor_venta = :nuevoVendedor WHERE $item = :$item");
+
+		$stmt -> bindParam(":nuevoVendedor", $nuevoVendedor, PDO::PARAM_INT);
+		$stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
+
+		if($stmt -> execute()){
+
+			return "ok";
+
+		}else{
+
+			return "error";
+		
+		}
+
+		$stmt -> close();
+
+		$stmt = null;
+
 	}
 
 	

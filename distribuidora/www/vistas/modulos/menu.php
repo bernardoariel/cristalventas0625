@@ -206,6 +206,17 @@ echo '
 
 				</a>
 
+			</li>
+
+			<li>
+
+				<a href="vendedores">
+
+					<i class="fa fa-user-circle-o"></i>
+					<span>Vendedores</span>
+
+				</a>
+
 			</li>';
 			
 			echo '

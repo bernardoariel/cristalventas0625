@@ -165,6 +165,7 @@ class ControladorVentas{
 						   "adeuda"=>$adeuda,
 						   "obs"=>strtoupper(''),
 						   "metodo_pago"=>$_POST["listaPagosForm"],
+						   "id_vendedor_venta"=>$_POST["vendedorSeleccionado"],
 						   "referenciapago"=>'',
 						   "fechapago"=>date('Y-m-d'));
 

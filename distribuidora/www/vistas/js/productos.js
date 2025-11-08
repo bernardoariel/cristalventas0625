@@ -1,4 +1,96 @@
+let valorNombreCrear = false;
+let valorCodigoCrear = false;
+let valorNombreEditar = true;   // al abrir viene con valores, arrancamos en true
+let valorCodigoEditar = true;
 
+function numeroValido(v) {
+  if (v === '' || v === null) return false;
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 0;
+}
+
+function validateCrearProducto() {
+  const stockVal = $(refsCrear.stock).val(); // <-- USAR refsCrear.stock
+
+  const filled =
+    $('#nuevaCategoria').val() &&
+    $('#nuevoCodigo').val()?.trim().length > 0 &&
+    $('#nuevoNombre').val()?.trim().length > 0 &&
+    (stockVal ?? '').toString().length > 0 &&                // <-- stock
+    $('#nuevoPrecioCompra').val()?.toString().length > 0 &&
+    $('#nuevoPrecioVenta').val()?.toString().length > 0;
+
+  const numerosOk =
+    numeroValido(stockVal) &&                                 // <-- stock
+    numeroValido($('#nuevoPrecioCompra').val()) &&
+    numeroValido($('#nuevoPrecioVenta').val());
+
+  const unicidadOk = valorNombreCrear === true && valorCodigoCrear === true;
+
+  $('#btnGuardarCrearProducto').prop('disabled', !(filled && numerosOk && unicidadOk));
+}
+
+// - refs de campos (cambiá si tenés otros IDs)
+const refsCrear = {
+  cat:   '#nuevaCategoria',
+  cod:   '#nuevoCodigo',
+  nom:   '#nuevoNombre',
+  desc:  '#nuevaDescripcion',   // si la descripción NO es obligatoria, quitá esta línea del chequeo
+  stock: '#nuevoStock, [name="nuevoStock"]',
+  pc:    '#nuevoPrecioCompra',
+  pv:    '#nuevoPrecioVenta',
+  btn:   '#btnGuardarCrearProducto'
+};
+const refsEditar = {
+  cat:   '#editarCategoria',
+  cod:   '#editarCodigo',
+  nom:   '#editarNombre',
+  desc:  '#editarDescripcion',
+  stock: '#editarStock, [name="editarStock"], [name="stock"]',
+  pc:    '#editarPrecioCompra',
+  pv:    '#editarPrecioVenta',
+  btn:   '#btnGuardarEditarProducto'
+};
+// Deshabilitá al abrir el modal y enganchá eventos
+$('#modalAgregarProducto').on('shown.bs.modal', function () {
+  valorNombreCrear = false;
+  valorCodigoCrear = false;
+  $('#errNombreCrear').html('');
+  $('#errCodigoCrear').html('');
+  $('#btnGuardarCrearProducto').prop('disabled', true);
+  $('#nuevoNombre').focus();
+  validateCrearProducto();
+});
+function validateEditarProducto() {
+  const stockVal = $(refsEditar.stock).val();
+
+  const filled =
+    $(refsEditar.cat).val() &&
+    $(refsEditar.cod).val()?.trim().length > 0 &&
+    $(refsEditar.nom).val()?.trim().length > 0 &&
+    (stockVal ?? '').toString().length > 0 &&
+    $(refsEditar.pc).val()?.toString().length > 0 &&
+    $(refsEditar.pv).val()?.toString().length > 0;
+
+  const numerosOk =
+    numeroValido(stockVal) &&
+    numeroValido($(refsEditar.pc).val()) &&
+    numeroValido($(refsEditar.pv).val());
+
+  const unicidadOk = valorNombreEditar === true && valorCodigoEditar === true;
+
+  $(refsEditar.btn).prop('disabled', !(filled && numerosOk && unicidadOk));
+}
+
+// Cada cambio de campo revalida
+$([
+  refsCrear.cat, refsCrear.cod, refsCrear.nom, refsCrear.desc,
+  refsCrear.stock, refsCrear.pc, refsCrear.pv
+].join(',')).on('input change keyup', validateCrearProducto);
+$([
+  refsEditar.cat, refsEditar.cod, refsEditar.nom, refsEditar.desc,
+  refsEditar.stock, refsEditar.pc, refsEditar.pv
+].join(',')).on('input change keyup', validateEditarProducto);
 /*=============================================
 CRGAR LOS DATOS JASON
 =============================================*/
@@ -73,25 +165,21 @@ $('.tablaProductosNJ').DataTable( {
   }
 } );
 
-/*=============================================
-HACER FOCO EN NOMBRE DE PRODUCTOS CUANDO AGREGO
-=============================================*/
-$('#modalAgregarProducto').on('shown.bs.modal', function () {
-    
-    $('#nuevaCategoria').focus();
-    // Asegurar que el botón esté deshabilitado al inicio
-    $('#btnGuardarCrearProducto').prop('disabled', true);
-  
-})
+
 
 /*=============================================
 HACER FOCO EN NOMBRE DE PRODUCTOS CUANDO MODIFICO
 =============================================*/
 $('#modalEditarProducto').on('shown.bs.modal', function () {
-    
-    $('#editarCategoria').focus();
-    $('#editarCategoria').select();
-  
+  valorNombreEditar = true;
+  valorCodigoEditar = true;  
+  $('#editarCategoria').focus();
+  $('#editarCategoria').select();
+   $('#errNombreEditar').html('');
+  $('#errCodigoEditar').html('');
+  $(refsEditar.btn).prop('disabled', true);
+
+  validateEditarProducto();
 })
 
 
@@ -120,8 +208,8 @@ $("#nuevaCategoria").change(function(){
 
       	if(!respuesta){
 
-      		var nuevoCodigo = idCategoria+"01";
-      		$("#nuevoCodigo").val(nuevoCodigo);
+      		 var nuevoCodigo = idCategoria + "01";
+    $("#nuevoCodigo").val(nuevoCodigo).trigger('change');
 
       	}else{
 
@@ -131,7 +219,7 @@ $("#nuevaCategoria").change(function(){
             let codigo = nuevoPrefijo + nuevoCodigo
             console.log("respuesta[\"codigo\"]", `${nuevoCodigo}${nuevoPrefijo}`);
             $('#nuevoCodigoNumero').val(nuevoCodigo)
-            $("#nuevoCodigo").val(codigo);
+            $("#nuevoCodigo").val(codigo).trigger('change');
             $('#nuevoCodigo').select();
           // }else{
           //   $("#nuevoCodigo").val('');
@@ -140,13 +228,18 @@ $("#nuevaCategoria").change(function(){
       		
 
       	}
-                
+                validateCrearProducto();
       }
 
   	})
 
 })
-
+$('#nuevoNombre').on('input', function () {
+  if (!$(this).val().trim()) { valorNombreCrear = false; validateCrearProducto(); }
+});
+$('#nuevoCodigo').on('input', function () {
+  if (!$(this).val().trim()) { valorCodigoCrear = false; validateCrearProducto(); }
+});
 // /*=============================================
 // AGREGANDO PRECIO DE VENTA
 // =============================================*/
@@ -324,203 +417,155 @@ $('#nuevoCodigo').on('change', function(e){
     }
 }) */
 })
-//creo variables para dejar acentado si el valor es aceptado
-let valorNombreCrear = false
-let valorCodigoCrear = false
 
-$('#nuevoNombre').on('change', function(e){
-  console.log($('#nuevoNombre').val())
-  var datos = new FormData();
-  datos.append("bsqNombreCrear", true);
-  datos.append("nombre", $('#nuevoNombre').val());
+// util: debounce
+function debounce(fn, wait = 350) {
+  let t; 
+  return function(...args) {
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, args), wait);
+  };
+}
+
+// --- Nombre (crear) en tiempo real
+const checkNombreCrear = debounce(function () {
+  const value = $('#nuevoNombre').val().trim();
+
+  if (value.length < 3) {
+    // muy corto => no valido aún
+    valorNombreCrear = false;
+    $('#errNombreCrear').html('');
+    return validateCrearProducto();
+  }
+
+  const datos = new FormData();
+  datos.append('bsqNombreCrear', true);
+  datos.append('nombre', value);
 
   $.ajax({
-
-    url:"ajax/productos.ajax.php",
-    method: "POST",
+    url: 'ajax/productos.ajax.php',
+    method: 'POST',
     data: datos,
     cache: false,
     contentType: false,
     processData: false,
-    
-    success:function(respuesta){
-      console.log(respuesta)
-      if(respuesta=='nuevoNombre'){
-
-        $('#errNombreCrear').html('Este NOMBRE ya se encuentra en la bd')
-        $(this).select()
-        $(this).focus()
-        
-        valorNombreCrear = false
-
-      }else{
-
-        $('#errNombreCrear').html('')
-        
-        valorNombreCrear = true
+    success: function (respuesta) {
+      if (respuesta === 'nuevoNombre') {
+        $('#errNombreCrear').html('Este NOMBRE ya se encuentra en la bd');
+        valorNombreCrear = false;
+      } else {
+        $('#errNombreCrear').html('');
+        valorNombreCrear = true;
       }
-      console.log("desde nuevoCodigo nom",valorCodigoCrear)
-      console.log("desde nuevoNombre nom",valorNombreCrear)
-      if(valorCodigoCrear == false || valorNombreCrear== false){
-      
-        $('#btnGuardarCrearProducto').prop('disabled', true);
-        
-      }else{
-        $('#btnGuardarCrearProducto').prop('disabled', false);
-      }
-
+      validateCrearProducto();
     }
+  });
+}, 350);
 
-  })
-  
-})
-$('#nuevoCodigo').on('change', function(e){
-  
-  var datos = new FormData();
-  datos.append("bsqCodigoCrear", true);
-  datos.append("codigo", $('#nuevoCodigo').val());
+$('#nuevoNombre').on('input blur', checkNombreCrear);
+
+// --- Código (crear) en tiempo real
+const checkCodigoCrear = debounce(function () {
+  const value = $('#nuevoCodigo').val().trim();
+
+  if (value.length === 0) {
+    valorCodigoCrear = false;
+    $('#errCodigoCrear').html('');
+    return validateCrearProducto();
+  }
+
+  const datos = new FormData();
+  datos.append('bsqCodigoCrear', true);
+  datos.append('codigo', value);
 
   $.ajax({
-
-    url:"ajax/productos.ajax.php",
-    method: "POST",
+    url: 'ajax/productos.ajax.php',
+    method: 'POST',
     data: datos,
     cache: false,
     contentType: false,
     processData: false,
-    
-    success:function(respuesta){
-      console.log(respuesta)
-      if(respuesta=='nuevoCodigo'){
-
-        $('#errCodigoCrear').html('Este CODIGO ya se encuentra en la bd')
-        $(this).select()
-        $(this).focus()
-        
-        valorCodigoCrear = false
-      }else{
-
-        $('#errCodigoCrear').html('')
-        
-        valorCodigoCrear = true
+    success: function (respuesta) {
+      if (respuesta === 'nuevoCodigo') {
+        $('#errCodigoCrear').html('Este CODIGO ya se encuentra en la bd');
+        valorCodigoCrear = false;
+      } else {
+        $('#errCodigoCrear').html('');
+        valorCodigoCrear = true;
       }
-
-      console.log("desde nuevoCodigo cod",valorCodigoCrear)
-      console.log("desde nuevoNombre cod",valorNombreCrear)
-
-      if(valorCodigoCrear == false || valorNombreCrear== false){
-
-        $('#btnGuardarCrearProducto').prop('disabled', true);
-
-      }else{
-
-        $('#btnGuardarCrearProducto').prop('disabled', false);
-        
-      }
-
+      validateCrearProducto();
     }
+  });
+}, 350);
 
-  })
+$('#nuevoCodigo').on('input blur', checkCodigoCrear);
 
-})
-//creo variables para dejar acentado si el valor es aceptado
-let valorNombreEditar = true
-let valorCodigoEditar = true
 
-$('#editarNombre').on('change', function(e){
-  console.log($('#editarNombre').val())
-  var datos = new FormData();
-  datos.append("bsqNombreEditar", true);
-  datos.append("nombre", $('#editarNombre').val());
+
+// Nombre (editar)
+$('#editarNombre').on('input blur', debounce(function () {
+  const value = $('#editarNombre').val().trim();
+  if (value.length < 3) {
+    valorNombreEditar = false;
+    $('#errNombreEditar').html('');
+    return validateEditarProducto();
+  }
+
+  const datos = new FormData();
+  datos.append('bsqNombreEditar', true);
+  datos.append('nombre', value);
 
   $.ajax({
-
-    url:"ajax/productos.ajax.php",
-    method: "POST",
+    url: 'ajax/productos.ajax.php',
+    method: 'POST',
     data: datos,
     cache: false,
     contentType: false,
     processData: false,
-    
-    success:function(respuesta){
-      console.log(respuesta)
-      if(respuesta=='editarNombre'){
-
-        $('#errNombreEditar').html('Este NOMBRE ya se encuentra en la bd')
-        $(this).select()
-        $(this).focus()
-        
-        valorNombreEditar = false
-      }else{
-
-        $('#errNombreEditar').html('')
-        
-        valorNombreEditar = true
+    success: function (respuesta) {
+      if (respuesta === 'editarNombre') {
+        $('#errNombreEditar').html('Este NOMBRE ya existe');
+        valorNombreEditar = false;
+      } else {
+        $('#errNombreEditar').html('');
+        valorNombreEditar = true;
       }
-      console.log("desde nuevoCodigo nom",valorCodigoEditar)
-      console.log("desde nuevoNombre nom",valorNombreEditar)
-      if(valorCodigoEditar == false || valorNombreEditar== false){
-      
-        $('#btnGuardarEditarProducto').prop('disabled', true);
-        
-      }else{
-
-        $('#btnGuardarEditarProducto').prop('disabled', false);
-
-      }
-
+      validateEditarProducto();
     }
+  });
+}, 350));
 
-  })
-  
-})
-$('#editarCodigo').on('change', function(e){
-  
-  var datos = new FormData();
-  datos.append("bsqCodigoEditar", true);
-  datos.append("codigo", $('#editarCodigo').val());
+// Código (editar)
+$('#editarCodigo').on('input blur', debounce(function () {
+  const value = $('#editarCodigo').val().trim();
+  if (!value) {
+    valorCodigoEditar = false;
+    $('#errCodigoEditar').html('');
+    return validateEditarProducto();
+  }
+
+  const datos = new FormData();
+  datos.append('bsqCodigoEditar', true);
+  datos.append('codigo', value);
 
   $.ajax({
-
-    url:"ajax/productos.ajax.php",
-    method: "POST",
+    url: 'ajax/productos.ajax.php',
+    method: 'POST',
     data: datos,
     cache: false,
     contentType: false,
     processData: false,
-    
-    success:function(respuesta){
-      console.log(respuesta)
-      if(respuesta=='editarCodigo'){
-
-        $('#errCodigoEditar').html('Este CODIGO ya se encuentra en la bd')
-        $(this).select()
-        $(this).focus()
-        
-        valorCodigoEditar = false
-      }else{
-
-        $('#errCodigoEditar').html('')
-        
-        valorCodigoEditar = true
+    success: function (respuesta) {
+      if (respuesta === 'editarCodigo') {
+        $('#errCodigoEditar').html('Este CÓDIGO ya existe');
+        valorCodigoEditar = false;
+      } else {
+        $('#errCodigoEditar').html('');
+        valorCodigoEditar = true;
       }
-
-      console.log("desde editarCodigo cod",valorCodigoEditar)
-      console.log("desde editarNombre cod",valorNombreEditar)
-
-      if(valorCodigoEditar == false || valorNombreEditar== false){
-
-        $('#btnGuardarEditarProducto').prop('disabled', true);
-
-      }else{
-
-        $('#btnGuardarEditarProducto').prop('disabled', false);
-
-      }
-
+      validateEditarProducto();
     }
+  });
+}, 350));
 
-  })
-
-})
 

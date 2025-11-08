@@ -82,7 +82,7 @@
            <th style="width:80px">Referencia</th> -->
            <th style="width:35px">Total</th> 
            <th style="width:35px">Adeuda</th>
-           <th style="width:80px">Obs</th>
+           <th style="width:80px">Vendedor</th>
            <th style="width:150px">Acciones</th>
 
          </tr> 
@@ -143,8 +143,28 @@
 
                           }
                           
+                         
+                          include('colores-vendedores.php');
+                          
+                          $itemVendedor = "id";
+                          $valorVendedor = $value["id_vendedor_venta"];
+                          $respuestaVendedor = ControladorVendedores::ctrMostrarVendedores($itemVendedor, $valorVendedor);
+                          
+                          $vendedorNombre = 'Sin asignar';
+                          $estiloVendedor = 'color:gray;';
+                         
+                          if(is_array($respuestaVendedor) && isset($respuestaVendedor["nombre"])){
+                              $vendedorNombre = $respuestaVendedor["nombre"];
+                              $idVendedor = $respuestaVendedor["id"];
+                              
+                              // Aplicar color según el ID del vendedor
+                              if(isset($coloresVendedores[$idVendedor])){
+                                  $colorConfig = $coloresVendedores[$idVendedor];
+                                  $estiloVendedor = 'background-color:'.$colorConfig['bg'].'; color:'.$colorConfig['color'].'; padding:5px 8px; border-radius:3px; font-weight:bold;';
+                              }
+                          }
 
-                          echo '<td>'.$value["observaciones"].'</td>
+                          echo '<td><span style="'.$estiloVendedor.'; cursor:pointer;" class="btnCambiarVendedor" idVenta="'.$value["id"].'" vendedorActual="'.$value["id_vendedor_venta"].'" title="Cambiar vendedor">'.$vendedorNombre.'</span></td>
 
                           <td>
 
@@ -518,5 +538,69 @@
 
     </div>
 
+  </div>
+</div>
+
+<!--=====================================
+MODAL CAMBIAR VENDEDOR
+======================================-->
+<div id="modalCambiarVendedor" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      
+      <!--=====================================
+      CABEZA DEL MODAL
+      ======================================-->
+      <div class="modal-header" style="background:#3c8dbc; color:white">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cambiar Vendedor</h4>
+      </div>
+      
+      <!--=====================================
+      CUERPO DEL MODAL
+      ======================================-->
+      <div class="modal-body">
+        <div class="box-body">
+          
+          <!-- ID DE LA VENTA -->
+          <input type="hidden" id="idVentaCambiarVendedor" name="idVentaCambiarVendedor">
+          
+          <!-- VENDEDOR ACTUAL -->
+          <input type="hidden" id="vendedorActualCambio" name="vendedorActualCambio">
+          
+          <!-- SELECCIONAR VENDEDOR -->
+          <div class="form-group">
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-user"></i></span> 
+              <select class="form-control input-lg" name="nuevoVendedor" id="nuevoVendedor" required>
+                <option value="">Seleccionar vendedor...</option>
+                <option value="0">Sin asignar</option>
+                <?php
+                $item = null;
+                $valor = null;
+                $vendedores = ControladorVendedores::ctrMostrarVendedores($item, $valor);
+                
+                if(is_array($vendedores)){
+                  foreach ($vendedores as $key => $value) {
+                    echo '<option value="'.$value["id"].'">'.$value["nombre"].'</option>';
+                  }
+                }
+                ?>
+              </select>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+      <!--=====================================
+      PIE DEL MODAL
+      ======================================-->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Salir</button>
+        <button type="button" class="btn btn-primary" id="btnGuardarCambioVendedor">Guardar cambios</button>
+      </div>
+      
+    </div>
   </div>
 </div>

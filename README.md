@@ -51,3 +51,39 @@ composer --version
 ```
 composer require tecnickcom/tcpdf
 ```
+
+---
+
+# 🔄 Copy Changes Script
+
+Script para sincronizar cambios entre **distribuidora** y **gotas**.
+
+## 🚀 Uso
+
+```bash
+# Ejecutar desde el directorio cristal/
+./copy-changes.sh
+```
+
+## 📋 ¿Qué hace?
+
+Copia los archivos modificados/nuevos de `distribuidora/` a `gotas/`:
+- ✅ 7 archivos nuevos (vendedores, migraciones, ajax)
+- ✅ 12 archivos modificados (vistas, JS, controladores)
+- ✅ Crea carpetas automáticamente
+- ✅ Muestra progreso y resumen
+
+## 📊 Ejemplo de salida
+
+```
+🔄 Copiando archivos modificados de distribuidora a gotas...
+📁 Copiando archivos nuevos...
+✅ distribuidora/www/ajax/cambiar-vendedor.ajax.php → gotas/www/ajax/cambiar-vendedor.ajax.php
+...
+📊 Resumen:
+   ✅ Archivos copiados: 19
+   ❌ Errores: 0
+🎉 ¡Sincronización completada exitosamente!
+```
+
+**⚠️ Importante:** Ejecutar desde `cristal/` y el script sobreescribe archivos en gotas.

@@ -1,0 +1,1 @@
+ALTER TABLE `ventas` ADD `id_vendedor_venta` INT NOT NULL COMMENT 'este es el id para el que se adjudica la venta\r\n' AFTER `id_vendedor`;

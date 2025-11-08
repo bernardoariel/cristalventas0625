@@ -56,7 +56,7 @@
            
            <th>Total</th> 
            <th>Adeuda</th> 
-           <th>Obs</th>
+           <th>Vendedor</th>
            <th>Acciones</th>
 
          </tr> 
@@ -113,7 +113,28 @@
 
                  
 
-                 echo '<td>'.$value["observaciones"].'</td>
+                include('colores-vendedores.php');
+                          
+                          $itemVendedor = "id";
+                          $valorVendedor = $value["id_vendedor_venta"];
+                          $respuestaVendedor = ControladorVendedores::ctrMostrarVendedores($itemVendedor, $valorVendedor);
+                          
+                          $vendedorNombre = 'Sin asignar';
+                          $estiloVendedor = 'color:gray;';
+                         
+                          if(is_array($respuestaVendedor) && isset($respuestaVendedor["nombre"])){
+                              $vendedorNombre = $respuestaVendedor["nombre"];
+                              $idVendedor = $respuestaVendedor["id"];
+                              
+                              // Aplicar color según el ID del vendedor
+                              if(isset($coloresVendedores[$idVendedor])){
+                                  $colorConfig = $coloresVendedores[$idVendedor];
+                                  $estiloVendedor = 'background-color:'.$colorConfig['bg'].'; color:'.$colorConfig['color'].'; padding:5px 8px; border-radius:3px; font-weight:bold;';
+                              }
+                          }
+
+                          echo '<td><span style="'.$estiloVendedor.'">'.$vendedorNombre.'</span></td>
+
 
                   <td>
 

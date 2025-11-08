@@ -135,7 +135,7 @@ $validRoutes = [
     "ctacorriente", "informes", "respaldo", "backup", "serverbk", "buscar-venta-cliente", "buscar-venta-repuestos", 
     "clientes", "clientesNJ", "historial", "ventas", "videos", "crear-venta", "editar-venta", "registros", 
     "vales", "actualizar-precios", "iniciar-stock", "productos-ventas", "imprimiretiqueta", "editar-perfil", 
-    "reportes", "salir","gastos","movimientos-caja"
+    "reportes", "salir","gastos","movimientos-caja", "vendedores"
 ];
 
 // Si el usuario intenta acceder al buscador
@@ -191,6 +191,7 @@ else {
 <script src="vistas/js/presupuestos.js"></script>
 <script src="vistas/js/ventas-productos.js"></script>
 <script src="vistas/js/caja-inicio.js"></script>
+<script src="vistas/js/vendedores.js"></script>
 
 </body>
 </html>

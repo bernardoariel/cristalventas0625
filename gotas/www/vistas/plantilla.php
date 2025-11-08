@@ -1,7 +1,8 @@
 <?php
 
-session_start();
-
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 $item = null;
 $valor = null;
 
@@ -16,7 +17,7 @@ $empresa = ControladorEmpresa::ctrMostrarEmpresa($item, $valor);
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <title>Gotas de Cristal</title>
+  <title>Distri Glavas</title>
 
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -123,8 +124,8 @@ $empresa = ControladorEmpresa::ctrMostrarEmpresa($item, $valor);
 CUERPO DOCUMENTO
 ======================================-->
 
-<body class="hold-transition skin-blue-light sidebar-mini">
- 
+
+<body class="hold-transition skin-purple-light sidebar-mini">
 <?php
 
 // Definir rutas permitidas
@@ -134,7 +135,7 @@ $validRoutes = [
     "ctacorriente", "informes", "respaldo", "backup", "serverbk", "buscar-venta-cliente", "buscar-venta-repuestos", 
     "clientes", "clientesNJ", "historial", "ventas", "videos", "crear-venta", "editar-venta", "registros", 
     "vales", "actualizar-precios", "iniciar-stock", "productos-ventas", "imprimiretiqueta", "editar-perfil", 
-    "reportes", "salir","gastos"
+    "reportes", "salir","gastos","movimientos-caja", "vendedores"
 ];
 
 // Si el usuario intenta acceder al buscador
@@ -190,6 +191,7 @@ else {
 <script src="vistas/js/presupuestos.js"></script>
 <script src="vistas/js/ventas-productos.js"></script>
 <script src="vistas/js/caja-inicio.js"></script>
+<script src="vistas/js/vendedores.js"></script>
 
 </body>
 </html>

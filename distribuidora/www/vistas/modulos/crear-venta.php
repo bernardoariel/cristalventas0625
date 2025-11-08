@@ -218,7 +218,37 @@
         <div class="box box-default">
           
           <div class="box-header with-border">
+             <div class="form-group">
+              
+              <label>Vendedores</label>
+              
+              <div class="input-group">
+              
+                <span class="input-group-addon"><i class="fa fa-th"></i></span> 
 
+                <select class="form-control input-lg" id="vendedorSeleccionado" name="vendedorSeleccionado" required >
+                  
+                  <option value="">Selecionar Vendedor</option>
+
+                  <?php
+
+                  $item = null;
+                  $valor = null;
+
+                  $vendedores = ControladorVendedores::ctrMostrarVendedores($item, $valor);
+
+                  foreach ($vendedores as $key => $value) {
+                    
+                    echo '<option value="'.$value["id"].'">'.$value["nombre"].'</option>';
+                  }
+
+                  ?>
+  
+                </select>
+
+              </div>
+
+            </div>
             <div class="col-lg-4">
               
               <button type="button" class="btn btn-danger btn-block"  id="btn-pagar" data-toggle="modal" data-dismiss="modal" data-target="#modalAgregarPago" disabled>

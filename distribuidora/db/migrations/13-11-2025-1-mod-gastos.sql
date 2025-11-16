@@ -1,0 +1,1 @@
+ALTER TABLE gastos ADD COLUMN medio_pago VARCHAR(20) DEFAULT 'EFECTIVO' AFTER importe;

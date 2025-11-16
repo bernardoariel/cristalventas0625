@@ -139,6 +139,7 @@ $totalDia = ControladorGastos::ctrSumaGastosDia($fechaFinal, $categoria);
            <th>Importe</th>
            <th>Fecha Transacción</th>
            <th>Categoría</th>
+           <th>Método de Pago</th>
            <th>Usuario</th>
            <th>Observaciones</th>
            <th style="width:100px">Acciones</th>
@@ -177,6 +178,9 @@ $totalDia = ControladorGastos::ctrSumaGastosDia($fechaFinal, $categoria);
                // Obtener nombre de categoría
                $categoria = ControladorCategorias::ctrMostrarCategorias("id", $value["id_categoria"]);
                echo   '<td>'.($categoria ? $categoria["categoria"] : 'Sin categoría').'</td>';
+               
+               // Mostrar método de pago
+               echo   '<td>'.(isset($value["medio_pago"]) ? $value["medio_pago"] : 'EFECTIVO').'</td>';
                
                // Obtener nombre de usuario
                $usuario = ControladorUsuarios::ctrMostrarUsuarios("id", $value["id_usuario"]);
@@ -272,6 +276,30 @@ MODAL AGREGAR GASTO
                 <span class="input-group-addon"><i class="fa fa-dollar"></i></span> 
                 
                 <input type="number" step="0.01" class="form-control input-lg" name="nuevoImporte" id="nuevoImporte" placeholder="Ingresar importe" required>
+                
+              </div>
+              
+            </div>
+            
+            <!-- ENTRADA PARA SELECCIONAR EL MÉTODO DE PAGO -->
+            
+            <div class="form-group">
+              
+              <div class="input-group">
+                
+                <span class="input-group-addon"><i class="fa fa-credit-card"></i></span> 
+                
+                <select class="form-control input-lg" name="nuevoMedioPago" id="nuevoMedioPago" required>
+                  
+                  <option value="">Seleccionar método de pago</option>
+                  <option value="EFECTIVO">EFECTIVO</option>
+                  <option value="TARJETA">TARJETA</option>
+                  <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                  <option value="CHEQUE">CHEQUE</option>
+                  <option value="CTA_CTE">CTA_CTE</option>
+                  <option value="VALE">VALE</option>
+                  
+                </select>
                 
               </div>
               
@@ -424,6 +452,30 @@ MODAL EDITAR GASTO
                 <span class="input-group-addon"><i class="fa fa-dollar"></i></span> 
 
                 <input type="number" step="0.01" class="form-control input-lg" name="editarImporte" id="editarImporte" required>
+
+              </div>
+
+            </div>
+            
+            <!-- ENTRADA PARA SELECCIONAR EL MÉTODO DE PAGO -->
+            
+            <div class="form-group">
+              
+              <div class="input-group">
+              
+                <span class="input-group-addon"><i class="fa fa-credit-card"></i></span> 
+
+                <select class="form-control input-lg" name="editarMedioPago" id="editarMedioPago" required>
+                  
+                  <option value="">Seleccionar método de pago</option>
+                  <option value="EFECTIVO">EFECTIVO</option>
+                  <option value="TARJETA">TARJETA</option>
+                  <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                  <option value="CHEQUE">CHEQUE</option>
+                  <option value="CTA_CTE">CTA_CTE</option>
+                  <option value="VALE">VALE</option>
+                  
+                </select>
 
               </div>
 

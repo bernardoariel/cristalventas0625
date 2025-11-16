@@ -42,12 +42,13 @@ class ModeloGastos{
 	static public function mdlIngresarGasto($tabla, $datos){
 
 		$stmt = Conexion::conectar()->prepare(
-			"INSERT INTO $tabla (nombre, importe, fecha_transaccion, id_categoria, id_usuario, obs, activo, obsdel) 
-			VALUES (:nombre, :importe, :fecha_transaccion, :id_categoria, :id_usuario, :obs, :activo, :obsdel)"
+			"INSERT INTO $tabla (nombre, importe, medio_pago, fecha_transaccion, id_categoria, id_usuario, obs, activo, obsdel) 
+			VALUES (:nombre, :importe, :medio_pago, :fecha_transaccion, :id_categoria, :id_usuario, :obs, :activo, :obsdel)"
 		);
 
 		$stmt->bindParam(":nombre", $datos['nombre'], PDO::PARAM_STR);
 		$stmt->bindParam(":importe", $datos['importe'], PDO::PARAM_STR);
+		$stmt->bindParam(":medio_pago", $datos['medio_pago'], PDO::PARAM_STR);
 		$stmt->bindParam(":fecha_transaccion", $datos['fecha_transaccion'], PDO::PARAM_STR);
 		$stmt->bindParam(":id_categoria", $datos['id_categoria'], PDO::PARAM_INT);
 		$stmt->bindParam(":id_usuario", $datos['id_usuario'], PDO::PARAM_INT);
@@ -70,10 +71,11 @@ class ModeloGastos{
 
 	static public function mdlActualizarGasto($tabla, $datos){
 
-		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET nombre = :nombre, importe = :importe, fecha_transaccion = :fecha_transaccion, id_categoria = :id_categoria, obs = :obs WHERE id = :id");
+		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET nombre = :nombre, importe = :importe, medio_pago = :medio_pago, fecha_transaccion = :fecha_transaccion, id_categoria = :id_categoria, obs = :obs WHERE id = :id");
 
 		$stmt -> bindParam(":nombre", $datos["nombre"], PDO::PARAM_STR);
 		$stmt -> bindParam(":importe", $datos["importe"], PDO::PARAM_STR);
+		$stmt -> bindParam(":medio_pago", $datos["medio_pago"], PDO::PARAM_STR);
 		$stmt -> bindParam(":fecha_transaccion", $datos["fecha_transaccion"], PDO::PARAM_STR);
 		$stmt -> bindParam(":id_categoria", $datos["id_categoria"], PDO::PARAM_INT);
 		$stmt -> bindParam(":obs", $datos["obs"], PDO::PARAM_STR);
@@ -99,10 +101,11 @@ class ModeloGastos{
 
 	static public function mdlEditarGasto($tabla, $datos){
 		
-		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET nombre = :nombre, importe = :importe, fecha_transaccion = :fecha_transaccion, id_categoria = :id_categoria, obs = :obs WHERE id = :id");
+		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET nombre = :nombre, importe = :importe, medio_pago = :medio_pago, fecha_transaccion = :fecha_transaccion, id_categoria = :id_categoria, obs = :obs WHERE id = :id");
 
 		$stmt -> bindParam(":nombre", $datos["nombre"], PDO::PARAM_STR);
 		$stmt -> bindParam(":importe", $datos["importe"], PDO::PARAM_STR);
+		$stmt -> bindParam(":medio_pago", $datos["medio_pago"], PDO::PARAM_STR);
 		$stmt -> bindParam(":fecha_transaccion", $datos["fecha_transaccion"], PDO::PARAM_STR);
 		$stmt -> bindParam(":id_categoria", $datos["id_categoria"], PDO::PARAM_INT);
 		$stmt -> bindParam(":obs", $datos["obs"], PDO::PARAM_STR);
@@ -233,7 +236,7 @@ class ModeloGastos{
 	}
 
 	/*=============================================
-	SUMA DE GASTOS DEL DÍA
+	SUMAR GASTOS POR DÍA
 	=============================================*/
 	static public function mdlSumaGastosDia($tabla, $fecha, $categoria = null){
 		if ($categoria) {
@@ -246,6 +249,27 @@ class ModeloGastos{
 		}
 		$stmt->execute();
 		return $stmt->fetch()["total"] ?? 0;
+	}
+
+	/*=============================================
+	INSERTAR MOVIMIENTO CAJA
+	=============================================*/
+	static public function mdlIngresarMovimientoCaja($tabla, $datos){
+		
+		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (fecha, tipo, monto, concepto) VALUES (:fecha, :tipo, :monto, :concepto)");
+
+		$stmt->bindParam(":fecha", $datos['fecha'], PDO::PARAM_STR);
+		$stmt->bindParam(":tipo", $datos['tipo'], PDO::PARAM_STR);
+		$stmt->bindParam(":monto", $datos['monto'], PDO::PARAM_STR);
+		$stmt->bindParam(":concepto", $datos['concepto'], PDO::PARAM_STR);
+
+		if($stmt->execute()){
+			return "ok";
+		} else {
+			return $stmt->errorInfo();	
+		}
+
+		$stmt = null;
 	}
 
 }

@@ -24,6 +24,7 @@ $(".tablas").on("click", ".btnEditarGasto", function(){
      		$("#editarFechaTransaccion").val(respuesta["fecha_transaccion"]);
      		$("#editarCategoria").val(respuesta["id_categoria"]);
      		$("#editarObservacion").val(respuesta["obs"]);
+     		$("#editarMedioPago").val(respuesta["medio_pago"] || "EFECTIVO");
      		$("#idGasto").val(respuesta["id"]);
      	}
 

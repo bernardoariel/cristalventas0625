@@ -2,12 +2,13 @@ services:
 
   distribuidora_web:
     build:
-      context: ./distribuidora
+      context: .          # usa Dockerfile de la raíz
     container_name: distribuidora_web
     volumes:
-      - ./distribuidora/www:/var/www/html
-    restart: always
+      - ./app/www:/var/www/html   # código único
+    restart: "no"
     environment:
+      - APP_TENANT=distribuidora
       - VIRTUAL_HOST=distribuidoraglavas.com,www.distribuidoraglavas.com,distribuidora.local
       - LETSENCRYPT_HOST=distribuidoraglavas.com,www.distribuidoraglavas.com
       - LETSENCRYPT_EMAIL=info@distribuidoraglavas.com
@@ -15,12 +16,13 @@ services:
 
   gotas_web:
     build:
-      context: ./gotas
+      context: .          # mismo Dockerfile
     container_name: gotas_web
     volumes:
-      - ./gotas/www:/var/www/html
-    restart: always
+      - ./app/www:/var/www/html   # MISMO código
+    restart: "no"
     environment:
+      - APP_TENANT=gotas
       - VIRTUAL_HOST=gotasdecristal.com,www.gotasdecristal.com,gotas.local
       - LETSENCRYPT_HOST=gotasdecristal.com,www.gotasdecristal.com
       - LETSENCRYPT_EMAIL=info@gotasdecristal.com
@@ -36,8 +38,8 @@ services:
       MYSQL_PASSWORD: userpass
     volumes:
       - distribuidora_db_data:/var/lib/mysql
-      - ./distribuidora/db/localhost.sql:/docker-entrypoint-initdb.d/localhost.sql
-    restart: always
+      - ./db-init/distribuidora.sql:/docker-entrypoint-initdb.d/01_distribuidora.sql
+    restart: "no"
 
   gotas_db:
     image: mysql:5.7
@@ -49,14 +51,13 @@ services:
       MYSQL_PASSWORD: userpass
     volumes:
       - gotas_db_data:/var/lib/mysql
-      - ./gotas/db/localhost.sql:/docker-entrypoint-initdb.d/localhost.sql
-
-    restart: always
+      - ./db-init/gotas.sql:/docker-entrypoint-initdb.d/01_gotas.sql
+    restart: "no"
 
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx_proxy
-    restart: always
+    restart: "no"
     ports:
       - "80:80"
       - "443:443"
@@ -67,7 +68,15 @@ services:
       - ./html:/usr/share/nginx/html
       - ./nginx.tmpl:/app/nginx.tmpl
       - confd:/etc/nginx/conf.d
-
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOSTS: distribuidora_db,gotas_db
+    ports:
+      - "8080:80"
   letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: nginx_letsencrypt
@@ -80,6 +89,7 @@ services:
       - ./html:/usr/share/nginx/html
     depends_on:
       - nginx-proxy
+
 volumes:
   distribuidora_db_data:
   gotas_db_data:
